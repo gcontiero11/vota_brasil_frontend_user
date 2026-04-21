@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import type { BadgeVariant } from "@/components/ui/Badge";
 import { ExpandablePanel } from "@/components/ui/ExpandablePanel";
@@ -63,6 +64,15 @@ export function VotacaoItem({ votacao }: VotacaoItemProps) {
           </p>
         ) : null}
         <AISummaryPlaceholder message="Ainda não há resumo por IA disponível para esta votação." />
+        <div className="flex justify-end">
+          <Link
+            href={`/proposicoes/${votacao.proposicaoId}/votacoes/${votacao.id}`}
+            className="text-sm font-medium text-brand-700 hover:text-brand-800 hover:underline"
+            aria-label={`Ver votos da votação: ${votacao.titulo}`}
+          >
+            Ver votos →
+          </Link>
+        </div>
       </div>
     </ExpandablePanel>
   );
