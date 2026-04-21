@@ -62,6 +62,29 @@ export interface ProposicaoDetalhe extends Proposicao {
   descricaoIA: string | null;
 }
 
+export type VotoResultado =
+  | "sim"
+  | "nao"
+  | "abstencao"
+  | "ausente"
+  | "obstrucao";
+
+export interface VotoIndividual {
+  id: string;
+  deputado: string;
+  partido: string;
+  uf: string;
+  resultado: VotoResultado;
+}
+
+export interface VotacaoDetalhe extends Votacao {
+  votos: VotoIndividual[];
+}
+
+export interface ListVotosParams {
+  partido?: string;
+}
+
 export type ProposicaoTipoFilter = ProposicaoTipo | "TODOS";
 export type PeriodoFilter = 30 | 90 | 365 | "TUDO";
 
