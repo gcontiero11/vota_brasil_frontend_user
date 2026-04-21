@@ -1,11 +1,14 @@
 import {
   getAllProposicoesMock,
   getProposicaoDetalheMock,
+  getVotacaoDetalheMock,
 } from "./mocks";
 import type {
   ListProposicoesParams,
+  ListVotosParams,
   Proposicao,
   ProposicaoDetalhe,
+  VotacaoDetalhe,
 } from "./types";
 
 /**
@@ -63,4 +66,22 @@ export async function getProposicaoById(
 ): Promise<ProposicaoDetalhe | null> {
   await simulateLatency();
   return getProposicaoDetalheMock(id);
+}
+
+export async function getVotacaoById(
+  votacaoId: string,
+  params: ListVotosParams = {},
+): Promise<VotacaoDetalhe | null> {
+  await simulateLatency();
+
+  const detalhe = getVotacaoDetalheMock(votacaoId);
+  if (!detalhe) return null;
+
+  const partido = params.partido?.trim().toUpperCase();
+  if (!partido) return detalhe;
+
+  return {
+    ...detalhe,
+    votos: detalhe.votos.filter((v) => v.partido === partido),
+  };
 }
