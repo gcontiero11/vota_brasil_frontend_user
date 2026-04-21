@@ -1,0 +1,72 @@
+export type ProposicaoTipo = "PL" | "PEC" | "MPV" | "PLP" | "PDL";
+
+export type ProposicaoStatus =
+  | "em_tramitacao"
+  | "pronta_para_pauta"
+  | "aprovada"
+  | "arquivada"
+  | "rejeitada";
+
+export interface Autoria {
+  nome: string;
+  partido?: string;
+  uf?: string;
+}
+
+export interface Proposicao {
+  id: string;
+  tipo: ProposicaoTipo;
+  numero: number;
+  ano: number;
+  ementa: string;
+  autoria: Autoria;
+  status: ProposicaoStatus;
+  /** Data da última movimentação (ISO-8601). */
+  ultimaMovimentacaoAt: string;
+}
+
+export interface Tramitacao {
+  id: string;
+  proposicaoId: string;
+  descricao: string;
+  orgao: string;
+  /** Data em que a tramitação ocorreu (ISO-8601). */
+  ocorridaEm: string;
+  detalhesAdicionais?: string;
+}
+
+export type VotacaoResultado = "aprovada" | "rejeitada" | "pendente";
+
+export interface VotacaoPlacar {
+  sim?: number;
+  nao?: number;
+  abstencao?: number;
+  ausente?: number;
+}
+
+export interface Votacao {
+  id: string;
+  proposicaoId: string;
+  titulo: string;
+  /** Data da votação (ISO-8601). */
+  ocorridaEm: string;
+  resultado: VotacaoResultado;
+  placar?: VotacaoPlacar;
+  detalhesAdicionais?: string;
+}
+
+export interface ProposicaoDetalhe extends Proposicao {
+  tramitacoes: Tramitacao[];
+  votacoes: Votacao[];
+  /** Resumo gerado por IA. `null` indica que ainda não há resumo disponível. */
+  descricaoIA: string | null;
+}
+
+export type ProposicaoTipoFilter = ProposicaoTipo | "TODOS";
+export type PeriodoFilter = 30 | 90 | 365 | "TUDO";
+
+export interface ListProposicoesParams {
+  query?: string;
+  tipo?: ProposicaoTipoFilter;
+  periodoDias?: PeriodoFilter;
+}

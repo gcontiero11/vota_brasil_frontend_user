@@ -1,0 +1,34 @@
+node_modules
+.next
+out
+build
+dist
+coverage
+
+# typescript / next
+*.tsbuildinfo
+next-env.d.ts
+
+# env
+.env
+.env.local
+.env.*.local
+
+# editor / os
+.DS_Store
+.vscode
+.idea
+
+# logs
+*.log
+
+# caches / deploy
+.turbo
+.vercel
+
+# yarn pnp
+.pnp
+.pnp.*
+
+# certs
+*.pem
