@@ -3,6 +3,9 @@ import type {
   ProposicaoDetalhe,
   Tramitacao,
   Votacao,
+  VotacaoDetalhe,
+  VotoIndividual,
+  VotoResultado,
 } from "./types";
 
 /**
@@ -261,7 +264,7 @@ const votacoesPorProposicao: Record<string, Votacao[]> = {
       titulo: "Aprovação do parecer do relator",
       ocorridaEm: daysAgo(30),
       resultado: "aprovada",
-      placar: { sim: 22, nao: 4, abstencao: 1 },
+      placar: { sim: 30, nao: 12, abstencao: 6, ausente: 2 },
       detalhesAdicionais:
         "Parecer aprovado com emendas substitutivas, sem obstrução em plenário.",
     },
@@ -273,7 +276,7 @@ const votacoesPorProposicao: Record<string, Votacao[]> = {
       titulo: "Admissibilidade na CCJ",
       ocorridaEm: daysAgo(150),
       resultado: "aprovada",
-      placar: { sim: 40, nao: 18 },
+      placar: { sim: 32, nao: 14, abstencao: 2, ausente: 2 },
     },
     {
       id: "v-002-02",
@@ -281,7 +284,7 @@ const votacoesPorProposicao: Record<string, Votacao[]> = {
       titulo: "Aprovação de parecer — Comissão Especial",
       ocorridaEm: daysAgo(20),
       resultado: "aprovada",
-      placar: { sim: 31, nao: 12, abstencao: 2 },
+      placar: { sim: 28, nao: 16, abstencao: 4, ausente: 2 },
     },
   ],
   "p-003": [
@@ -291,7 +294,7 @@ const votacoesPorProposicao: Record<string, Votacao[]> = {
       titulo: "Aprovação em plenário",
       ocorridaEm: daysAgo(20),
       resultado: "aprovada",
-      placar: { sim: 320, nao: 89, abstencao: 6, ausente: 98 },
+      placar: { sim: 30, nao: 10, abstencao: 3, ausente: 7 },
     },
   ],
   "p-005": [
@@ -301,7 +304,7 @@ const votacoesPorProposicao: Record<string, Votacao[]> = {
       titulo: "Votação nominal do PDL em plenário",
       ocorridaEm: daysAgo(45),
       resultado: "rejeitada",
-      placar: { sim: 140, nao: 290, abstencao: 8 },
+      placar: { sim: 18, nao: 28, abstencao: 3, ausente: 1 },
     },
   ],
   "p-007": [
@@ -311,7 +314,7 @@ const votacoesPorProposicao: Record<string, Votacao[]> = {
       titulo: "Aprovação de parecer na Comissão Especial",
       ocorridaEm: daysAgo(45),
       resultado: "aprovada",
-      placar: { sim: 28, nao: 11, abstencao: 3 },
+      placar: { sim: 26, nao: 18, abstencao: 4, ausente: 2 },
     },
     {
       id: "v-007-02",
@@ -340,6 +343,113 @@ const descricoesIA: Record<string, string | null> = {
     "A PEC inclui saneamento básico entre os direitos sociais previstos no art. 6º da Constituição, com impacto em políticas públicas de universalização do serviço.",
 };
 
+const DEPUTADOS_POOL: Array<{ deputado: string; partido: string; uf: string }> = [
+  { deputado: "Ana Ribeiro", partido: "PFAM", uf: "SP" },
+  { deputado: "Bruno Teixeira", partido: "PPRO", uf: "MG" },
+  { deputado: "Clara Monteiro", partido: "PNOV", uf: "RS" },
+  { deputado: "Daniel Barros", partido: "PLIB", uf: "BA" },
+  { deputado: "Felipe Araújo", partido: "PTRA", uf: "RJ" },
+  { deputado: "Giovana Souza", partido: "PDEM", uf: "CE" },
+  { deputado: "Eduarda Lima", partido: "PCID", uf: "PE" },
+  { deputado: "Helena Cardoso", partido: "PFAM", uf: "SC" },
+  { deputado: "Igor Pimenta", partido: "PPRO", uf: "GO" },
+  { deputado: "Juliana Freitas", partido: "PNOV", uf: "ES" },
+  { deputado: "Karla Mendonça", partido: "PLIB", uf: "PA" },
+  { deputado: "Marcos Vieira", partido: "PTRA", uf: "PR" },
+  { deputado: "Nathalia Ramos", partido: "PDEM", uf: "MT" },
+  { deputado: "Lucas Andrade", partido: "PCID", uf: "AM" },
+  { deputado: "Otávio Correia", partido: "PFAM", uf: "DF" },
+  { deputado: "Patrícia Moura", partido: "PPRO", uf: "AL" },
+  { deputado: "Rafael Dias", partido: "PNOV", uf: "PB" },
+  { deputado: "Sofia Nascimento", partido: "PLIB", uf: "MS" },
+  { deputado: "Úrsula Pinto", partido: "PTRA", uf: "MA" },
+  { deputado: "Vinicius Castro", partido: "PDEM", uf: "PI" },
+  { deputado: "Tiago Batista", partido: "PCID", uf: "TO" },
+  { deputado: "Wagner Siqueira", partido: "PFAM", uf: "SE" },
+  { deputado: "Yasmin Rocha", partido: "PPRO", uf: "RN" },
+  { deputado: "Zeca Nogueira", partido: "PNOV", uf: "AC" },
+  { deputado: "Alice Farias", partido: "PLIB", uf: "RR" },
+  { deputado: "Cíntia Brandão", partido: "PTRA", uf: "AP" },
+  { deputado: "Diego Henriques", partido: "PDEM", uf: "RO" },
+  { deputado: "Breno Tavares", partido: "PCID", uf: "SP" },
+  { deputado: "Érica Pires", partido: "PFAM", uf: "MG" },
+  { deputado: "Fábio Moura", partido: "PPRO", uf: "RJ" },
+  { deputado: "Gabriela Ferraz", partido: "PNOV", uf: "BA" },
+  { deputado: "Hugo Vasconcelos", partido: "PLIB", uf: "RS" },
+  { deputado: "João Fontes", partido: "PTRA", uf: "PE" },
+  { deputado: "Larissa Moraes", partido: "PDEM", uf: "CE" },
+  { deputado: "Isabela Neves", partido: "PCID", uf: "PR" },
+  { deputado: "Murilo Paiva", partido: "PFAM", uf: "GO" },
+  { deputado: "Nina Guedes", partido: "PPRO", uf: "SC" },
+  { deputado: "Orlando Sampaio", partido: "PNOV", uf: "ES" },
+  { deputado: "Paula Azevedo", partido: "PLIB", uf: "PA" },
+  { deputado: "Ricardo Tonelli", partido: "PTRA", uf: "DF" },
+  { deputado: "Sabrina Lobo", partido: "PDEM", uf: "MT" },
+  { deputado: "Quésia Ventura", partido: "PCID", uf: "AM" },
+  { deputado: "Túlio Marinho", partido: "PFAM", uf: "AL" },
+  { deputado: "Viviane Caldas", partido: "PPRO", uf: "PB" },
+  { deputado: "Xavier Rezende", partido: "PNOV", uf: "MS" },
+  { deputado: "Yuri Campelo", partido: "PLIB", uf: "MA" },
+  { deputado: "Zélia Paz", partido: "PTRA", uf: "PI" },
+  { deputado: "Antônio Cabral", partido: "PDEM", uf: "TO" },
+  { deputado: "Beatriz Magalhães", partido: "PCID", uf: "SE" },
+  { deputado: "Celso Furlan", partido: "PFAM", uf: "RN" },
+];
+
+const VOTO_ORDER: VotoResultado[] = [
+  "sim",
+  "nao",
+  "abstencao",
+  "ausente",
+  "obstrucao",
+];
+
+function buildVotos(
+  votacaoId: string,
+  counts: Partial<Record<VotoResultado, number>>,
+): VotoIndividual[] {
+  const sequence: VotoResultado[] = [];
+  for (const resultado of VOTO_ORDER) {
+    const n = counts[resultado] ?? 0;
+    for (let i = 0; i < n; i++) sequence.push(resultado);
+  }
+  if (sequence.length > DEPUTADOS_POOL.length) {
+    throw new Error(
+      `buildVotos: ${votacaoId} excede o pool de ${DEPUTADOS_POOL.length} deputados.`,
+    );
+  }
+  return sequence.map((resultado, i) => {
+    const dep = DEPUTADOS_POOL[i]!;
+    return {
+      id: `${votacaoId}-voto-${String(i + 1).padStart(2, "0")}`,
+      deputado: dep.deputado,
+      partido: dep.partido,
+      uf: dep.uf,
+      resultado,
+    };
+  });
+}
+
+const votosPorVotacao: Record<string, VotoIndividual[]> = {
+  "v-001-01": buildVotos("v-001-01", { sim: 30, nao: 12, abstencao: 6, ausente: 2 }),
+  "v-002-01": buildVotos("v-002-01", { sim: 32, nao: 14, abstencao: 2, ausente: 2 }),
+  "v-002-02": buildVotos("v-002-02", { sim: 28, nao: 16, abstencao: 4, ausente: 2 }),
+  "v-003-01": buildVotos("v-003-01", { sim: 30, nao: 10, abstencao: 3, ausente: 7 }),
+  "v-005-01": buildVotos("v-005-01", { sim: 18, nao: 28, abstencao: 3, ausente: 1 }),
+  "v-007-01": buildVotos("v-007-01", { sim: 26, nao: 18, abstencao: 4, ausente: 2 }),
+  "v-007-02": [],
+};
+
+function findVotacaoById(
+  votacaoId: string,
+): { votacao: Votacao; proposicaoId: string } | null {
+  for (const [proposicaoId, lista] of Object.entries(votacoesPorProposicao)) {
+    const found = lista.find((v) => v.id === votacaoId);
+    if (found) return { votacao: found, proposicaoId };
+  }
+  return null;
+}
+
 function daysAgo(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() - days);
@@ -366,5 +476,16 @@ export function getProposicaoDetalheMock(
     tramitacoes: [...(tramitacoesPorProposicao[id] ?? [])],
     votacoes: [...(votacoesPorProposicao[id] ?? [])],
     descricaoIA: descricoesIA[id] ?? null,
+  };
+}
+
+export function getVotacaoDetalheMock(
+  votacaoId: string,
+): VotacaoDetalhe | null {
+  const hit = findVotacaoById(votacaoId);
+  if (!hit) return null;
+  return {
+    ...hit.votacao,
+    votos: [...(votosPorVotacao[votacaoId] ?? [])],
   };
 }
