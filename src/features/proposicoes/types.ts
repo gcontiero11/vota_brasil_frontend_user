@@ -25,14 +25,26 @@ export interface Proposicao {
   ultimaMovimentacaoAt: string;
 }
 
+export type TramitacaoTipo =
+  | "DISTRIBUICAO"
+  | "RELATOR"
+  | "PARECER"
+  | "VOTACAO"
+  | "ENCAMINHAMENTO"
+  | "FINALIZACAO"
+  | "REATIVACAO";
+
 export interface Tramitacao {
   id: string;
   proposicaoId: string;
+  tipo: TramitacaoTipo;
   descricao: string;
   orgao: string;
   /** Data em que a tramitação ocorreu (ISO-8601). */
   ocorridaEm: string;
   detalhesAdicionais?: string;
+  /** Presente quando `tipo === "VOTACAO"`: detalhes da votação realizada. */
+  votacao?: Votacao;
 }
 
 export type VotacaoResultado = "aprovada" | "rejeitada" | "pendente";
@@ -52,12 +64,12 @@ export interface Votacao {
   ocorridaEm: string;
   resultado: VotacaoResultado;
   placar?: VotacaoPlacar;
-  detalhesAdicionais?: string;
+  /** Texto curto explicando do que se trata a votação. */
+  resumo?: string;
 }
 
 export interface ProposicaoDetalhe extends Proposicao {
   tramitacoes: Tramitacao[];
-  votacoes: Votacao[];
   /** Resumo gerado por IA. `null` indica que ainda não há resumo disponível. */
   descricaoIA: string | null;
 }

@@ -7,6 +7,7 @@ import type { Tramitacao } from "../types";
 const tramitacao: Tramitacao = {
   id: "t-1",
   proposicaoId: "p-1",
+  tipo: "RELATOR",
   descricao: "Designação de relator na Comissão de Educação.",
   orgao: "CEDUC",
   ocorridaEm: "2025-01-10T15:00:00.000Z",

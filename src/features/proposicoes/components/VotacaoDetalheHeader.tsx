@@ -49,9 +49,9 @@ export function VotacaoDetalheHeader({ votacao }: VotacaoDetalheHeaderProps) {
         </p>
       )}
 
-      {votacao.detalhesAdicionais ? (
+      {votacao.resumo ? (
         <p className="text-sm leading-relaxed text-slate-700">
-          {votacao.detalhesAdicionais}
+          {votacao.resumo}
         </p>
       ) : null}
     </header>

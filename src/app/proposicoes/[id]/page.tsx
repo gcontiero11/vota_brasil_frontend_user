@@ -6,7 +6,6 @@ import { getProposicaoById } from "@/features/proposicoes/api";
 import { DescricaoIA } from "@/features/proposicoes/components/DescricaoIA";
 import { ProposicaoHeader } from "@/features/proposicoes/components/ProposicaoHeader";
 import { TramitacoesList } from "@/features/proposicoes/components/TramitacoesList";
-import { VotacoesList } from "@/features/proposicoes/components/VotacoesList";
 import { formatProposicaoIdentifier } from "@/lib/format";
 
 export async function generateMetadata({
@@ -50,17 +49,10 @@ export default async function ProposicaoDetalhePage({
       </Section>
 
       <Section
-        title="Tramitações"
-        description="Movimentações registradas durante o processo legislativo."
+        title="Linha do tempo"
+        description="Movimentações da proposição em ordem cronológica decrescente, incluindo votações."
       >
         <TramitacoesList tramitacoes={proposicao.tramitacoes} />
-      </Section>
-
-      <Section
-        title="Votações"
-        description="Decisões tomadas em plenário ou em comissão."
-      >
-        <VotacoesList votacoes={proposicao.votacoes} />
       </Section>
     </div>
   );

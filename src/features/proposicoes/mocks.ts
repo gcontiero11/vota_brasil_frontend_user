@@ -109,6 +109,7 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-001-01",
       proposicaoId: "p-001",
+      tipo: "DISTRIBUICAO",
       descricao: "Apresentação do projeto em plenário.",
       orgao: "Plenário",
       ocorridaEm: daysAgo(120),
@@ -118,6 +119,7 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-001-02",
       proposicaoId: "p-001",
+      tipo: "DISTRIBUICAO",
       descricao: "Distribuição à Comissão de Educação.",
       orgao: "CEDUC",
       ocorridaEm: daysAgo(110),
@@ -125,6 +127,7 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-001-03",
       proposicaoId: "p-001",
+      tipo: "RELATOR",
       descricao: "Designação do relator na Comissão de Educação.",
       orgao: "CEDUC",
       ocorridaEm: daysAgo(90),
@@ -134,13 +137,33 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-001-04",
       proposicaoId: "p-001",
+      tipo: "PARECER",
       descricao: "Apresentação de parecer favorável com emendas.",
       orgao: "CEDUC",
       ocorridaEm: daysAgo(30),
     },
     {
+      id: "t-001-vot-01",
+      proposicaoId: "p-001",
+      tipo: "VOTACAO",
+      descricao: "Aprovação do parecer do relator.",
+      orgao: "CEDUC",
+      ocorridaEm: daysAgo(30),
+      votacao: {
+        id: "v-001-01",
+        proposicaoId: "p-001",
+        titulo: "Aprovação do parecer do relator",
+        ocorridaEm: daysAgo(30),
+        resultado: "aprovada",
+        placar: { sim: 30, nao: 12, abstencao: 6, ausente: 2 },
+        resumo:
+          "Comissão delibera sobre o parecer favorável com emendas substitutivas apresentado pelo relator.",
+      },
+    },
+    {
       id: "t-001-05",
       proposicaoId: "p-001",
+      tipo: "ENCAMINHAMENTO",
       descricao: "Requerimento de urgência em análise.",
       orgao: "Mesa Diretora",
       ocorridaEm: daysAgo(2),
@@ -150,6 +173,7 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-002-01",
       proposicaoId: "p-002",
+      tipo: "DISTRIBUICAO",
       descricao: "Protocolo da Proposta de Emenda à Constituição.",
       orgao: "Mesa Diretora",
       ocorridaEm: daysAgo(200),
@@ -157,6 +181,7 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-002-02",
       proposicaoId: "p-002",
+      tipo: "PARECER",
       descricao: "Admissibilidade aprovada pela CCJ.",
       orgao: "CCJ",
       ocorridaEm: daysAgo(150),
@@ -164,8 +189,27 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
         "Admissibilidade aprovada por 40 votos a 18, sem declaração de voto em destaque.",
     },
     {
+      id: "t-002-vot-01",
+      proposicaoId: "p-002",
+      tipo: "VOTACAO",
+      descricao: "Votação de admissibilidade na CCJ.",
+      orgao: "CCJ",
+      ocorridaEm: daysAgo(150),
+      votacao: {
+        id: "v-002-01",
+        proposicaoId: "p-002",
+        titulo: "Admissibilidade na CCJ",
+        ocorridaEm: daysAgo(150),
+        resultado: "aprovada",
+        placar: { sim: 32, nao: 14, abstencao: 2, ausente: 2 },
+        resumo:
+          "CCJ delibera se a PEC atende aos requisitos formais e materiais para prosseguir na tramitação.",
+      },
+    },
+    {
       id: "t-002-03",
       proposicaoId: "p-002",
+      tipo: "ENCAMINHAMENTO",
       descricao: "Designação de Comissão Especial.",
       orgao: "Mesa Diretora",
       ocorridaEm: daysAgo(120),
@@ -173,15 +217,35 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-002-04",
       proposicaoId: "p-002",
+      tipo: "PARECER",
       descricao: "Aprovação do parecer do relator na Comissão Especial.",
       orgao: "Comissão Especial",
       ocorridaEm: daysAgo(20),
+    },
+    {
+      id: "t-002-vot-02",
+      proposicaoId: "p-002",
+      tipo: "VOTACAO",
+      descricao: "Votação do parecer na Comissão Especial.",
+      orgao: "Comissão Especial",
+      ocorridaEm: daysAgo(20),
+      votacao: {
+        id: "v-002-02",
+        proposicaoId: "p-002",
+        titulo: "Aprovação de parecer — Comissão Especial",
+        ocorridaEm: daysAgo(20),
+        resultado: "aprovada",
+        placar: { sim: 28, nao: 16, abstencao: 4, ausente: 2 },
+        resumo:
+          "Comissão Especial decide sobre o parecer final do relator antes do encaminhamento ao plenário.",
+      },
     },
   ],
   "p-003": [
     {
       id: "t-003-01",
       proposicaoId: "p-003",
+      tipo: "DISTRIBUICAO",
       descricao: "Edição da Medida Provisória pelo Poder Executivo.",
       orgao: "Presidência da República",
       ocorridaEm: daysAgo(80),
@@ -189,6 +253,7 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-003-02",
       proposicaoId: "p-003",
+      tipo: "ENCAMINHAMENTO",
       descricao: "Instalação da comissão mista.",
       orgao: "Comissão Mista",
       ocorridaEm: daysAgo(60),
@@ -196,18 +261,58 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-003-03",
       proposicaoId: "p-003",
+      tipo: "FINALIZACAO",
       descricao: "Aprovação na Câmara dos Deputados.",
       orgao: "Plenário",
       ocorridaEm: daysAgo(20),
       detalhesAdicionais:
         "Aprovada com alterações no texto original, redação final publicada no DCD.",
     },
+    {
+      id: "t-003-vot-01",
+      proposicaoId: "p-003",
+      tipo: "VOTACAO",
+      descricao: "Votação em plenário.",
+      orgao: "Plenário",
+      ocorridaEm: daysAgo(20),
+      votacao: {
+        id: "v-003-01",
+        proposicaoId: "p-003",
+        titulo: "Aprovação em plenário",
+        ocorridaEm: daysAgo(20),
+        resultado: "aprovada",
+        placar: { sim: 30, nao: 10, abstencao: 3, ausente: 7 },
+        resumo:
+          "Câmara delibera sobre a conversão da Medida Provisória em lei, com o texto oriundo da comissão mista.",
+      },
+    },
   ],
-  // p-004 e p-005 propositalmente sem tramitações para exercitar empty state.
+  // p-004 propositalmente sem tramitações para exercitar empty state.
+  "p-005": [
+    {
+      id: "t-005-vot-01",
+      proposicaoId: "p-005",
+      tipo: "VOTACAO",
+      descricao: "Votação nominal do PDL em plenário.",
+      orgao: "Plenário",
+      ocorridaEm: daysAgo(45),
+      votacao: {
+        id: "v-005-01",
+        proposicaoId: "p-005",
+        titulo: "Votação nominal do PDL em plenário",
+        ocorridaEm: daysAgo(45),
+        resultado: "rejeitada",
+        placar: { sim: 18, nao: 28, abstencao: 3, ausente: 1 },
+        resumo:
+          "Plenário decide se susta os efeitos do decreto de subsídios à aviação regional.",
+      },
+    },
+  ],
   "p-006": [
     {
       id: "t-006-01",
       proposicaoId: "p-006",
+      tipo: "DISTRIBUICAO",
       descricao: "Apresentação em plenário.",
       orgao: "Plenário",
       ocorridaEm: daysAgo(60),
@@ -215,6 +320,7 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-006-02",
       proposicaoId: "p-006",
+      tipo: "ENCAMINHAMENTO",
       descricao: "Encaminhamento para CCTCI.",
       orgao: "CCTCI",
       ocorridaEm: daysAgo(14),
@@ -224,6 +330,7 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-007-01",
       proposicaoId: "p-007",
+      tipo: "ENCAMINHAMENTO",
       descricao: "Audiência pública realizada em comissão especial.",
       orgao: "Comissão Especial",
       ocorridaEm: daysAgo(60),
@@ -233,95 +340,63 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
     {
       id: "t-007-02",
       proposicaoId: "p-007",
+      tipo: "PARECER",
       descricao: "Parecer do relator apresentado.",
       orgao: "Comissão Especial",
       ocorridaEm: daysAgo(45),
     },
     {
+      id: "t-007-vot-01",
+      proposicaoId: "p-007",
+      tipo: "VOTACAO",
+      descricao: "Votação do parecer na Comissão Especial.",
+      orgao: "Comissão Especial",
+      ocorridaEm: daysAgo(45),
+      votacao: {
+        id: "v-007-01",
+        proposicaoId: "p-007",
+        titulo: "Aprovação de parecer na Comissão Especial",
+        ocorridaEm: daysAgo(45),
+        resultado: "aprovada",
+        placar: { sim: 26, nao: 18, abstencao: 4, ausente: 2 },
+        resumo:
+          "Comissão Especial vota o parecer do relator que regulamenta o trabalho mediado por plataformas digitais.",
+      },
+    },
+    {
       id: "t-007-03",
       proposicaoId: "p-007",
+      tipo: "ENCAMINHAMENTO",
       descricao: "Aguardando designação em plenário.",
       orgao: "Plenário",
       ocorridaEm: daysAgo(30),
+    },
+    {
+      id: "t-007-vot-02",
+      proposicaoId: "p-007",
+      tipo: "VOTACAO",
+      descricao: "Votação do requerimento de urgência.",
+      orgao: "Plenário",
+      ocorridaEm: daysAgo(30),
+      votacao: {
+        id: "v-007-02",
+        proposicaoId: "p-007",
+        titulo: "Urgência — votação pendente",
+        ocorridaEm: daysAgo(30),
+        resultado: "pendente",
+        resumo:
+          "Plenário aguarda decisão sobre o requerimento de urgência apresentado pelas lideranças.",
+      },
     },
   ],
   "p-008": [
     {
       id: "t-008-01",
       proposicaoId: "p-008",
+      tipo: "DISTRIBUICAO",
       descricao: "Apresentação da PEC.",
       orgao: "Mesa Diretora",
       ocorridaEm: hoursAgo(36),
-    },
-  ],
-};
-
-const votacoesPorProposicao: Record<string, Votacao[]> = {
-  "p-001": [
-    {
-      id: "v-001-01",
-      proposicaoId: "p-001",
-      titulo: "Aprovação do parecer do relator",
-      ocorridaEm: daysAgo(30),
-      resultado: "aprovada",
-      placar: { sim: 30, nao: 12, abstencao: 6, ausente: 2 },
-      detalhesAdicionais:
-        "Parecer aprovado com emendas substitutivas, sem obstrução em plenário.",
-    },
-  ],
-  "p-002": [
-    {
-      id: "v-002-01",
-      proposicaoId: "p-002",
-      titulo: "Admissibilidade na CCJ",
-      ocorridaEm: daysAgo(150),
-      resultado: "aprovada",
-      placar: { sim: 32, nao: 14, abstencao: 2, ausente: 2 },
-    },
-    {
-      id: "v-002-02",
-      proposicaoId: "p-002",
-      titulo: "Aprovação de parecer — Comissão Especial",
-      ocorridaEm: daysAgo(20),
-      resultado: "aprovada",
-      placar: { sim: 28, nao: 16, abstencao: 4, ausente: 2 },
-    },
-  ],
-  "p-003": [
-    {
-      id: "v-003-01",
-      proposicaoId: "p-003",
-      titulo: "Aprovação em plenário",
-      ocorridaEm: daysAgo(20),
-      resultado: "aprovada",
-      placar: { sim: 30, nao: 10, abstencao: 3, ausente: 7 },
-    },
-  ],
-  "p-005": [
-    {
-      id: "v-005-01",
-      proposicaoId: "p-005",
-      titulo: "Votação nominal do PDL em plenário",
-      ocorridaEm: daysAgo(45),
-      resultado: "rejeitada",
-      placar: { sim: 18, nao: 28, abstencao: 3, ausente: 1 },
-    },
-  ],
-  "p-007": [
-    {
-      id: "v-007-01",
-      proposicaoId: "p-007",
-      titulo: "Aprovação de parecer na Comissão Especial",
-      ocorridaEm: daysAgo(45),
-      resultado: "aprovada",
-      placar: { sim: 26, nao: 18, abstencao: 4, ausente: 2 },
-    },
-    {
-      id: "v-007-02",
-      proposicaoId: "p-007",
-      titulo: "Urgência — votação pendente",
-      ocorridaEm: daysAgo(30),
-      resultado: "pendente",
     },
   ],
 };
@@ -440,12 +515,13 @@ const votosPorVotacao: Record<string, VotoIndividual[]> = {
   "v-007-02": [],
 };
 
-function findVotacaoById(
-  votacaoId: string,
-): { votacao: Votacao; proposicaoId: string } | null {
-  for (const [proposicaoId, lista] of Object.entries(votacoesPorProposicao)) {
-    const found = lista.find((v) => v.id === votacaoId);
-    if (found) return { votacao: found, proposicaoId };
+function findVotacaoById(votacaoId: string): Votacao | null {
+  for (const lista of Object.values(tramitacoesPorProposicao)) {
+    for (const t of lista) {
+      if (t.tipo === "VOTACAO" && t.votacao?.id === votacaoId) {
+        return t.votacao;
+      }
+    }
   }
   return null;
 }
@@ -474,7 +550,6 @@ export function getProposicaoDetalheMock(
   return {
     ...base,
     tramitacoes: [...(tramitacoesPorProposicao[id] ?? [])],
-    votacoes: [...(votacoesPorProposicao[id] ?? [])],
     descricaoIA: descricoesIA[id] ?? null,
   };
 }
@@ -482,10 +557,10 @@ export function getProposicaoDetalheMock(
 export function getVotacaoDetalheMock(
   votacaoId: string,
 ): VotacaoDetalhe | null {
-  const hit = findVotacaoById(votacaoId);
-  if (!hit) return null;
+  const votacao = findVotacaoById(votacaoId);
+  if (!votacao) return null;
   return {
-    ...hit.votacao,
+    ...votacao,
     votos: [...(votosPorVotacao[votacaoId] ?? [])],
   };
 }
