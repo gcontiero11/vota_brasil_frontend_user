@@ -11,8 +11,6 @@ const tramitacao: Tramitacao = {
   descricao: "Designação de relator na Comissão de Educação.",
   orgao: "CEDUC",
   ocorridaEm: "2025-01-10T15:00:00.000Z",
-  detalhesAdicionais:
-    "Relatoria designada após acordo entre lideranças partidárias.",
 };
 
 const tramitacaoVotacao: Tramitacao = {
@@ -35,50 +33,27 @@ const tramitacaoVotacao: Tramitacao = {
 };
 
 describe("TramitacaoItem", () => {
-  it("mostra a tag do tipo no cabeçalho mesmo colapsado", () => {
+  it("renderiza tipo, descrição e órgão sem botão de expandir para tipos não-VOTACAO", () => {
     render(<TramitacaoItem tramitacao={tramitacao} />);
 
     expect(screen.getByText("Relator")).toBeInTheDocument();
+    expect(screen.getByText(tramitacao.descricao)).toBeInTheDocument();
+    expect(screen.getByText(/CEDUC/)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Detalhes da tramitação/ }),
+    ).not.toBeInTheDocument();
   });
 
-  it("começa colapsado e mostra apenas o cabeçalho", () => {
-    render(<TramitacaoItem tramitacao={tramitacao} />);
+  it("começa colapsado e mostra apenas o cabeçalho quando tipo é VOTACAO", () => {
+    render(<TramitacaoItem tramitacao={tramitacaoVotacao} />);
 
     const toggle = screen.getByRole("button", {
       name: /Detalhes da tramitação/,
     });
     expect(toggle).toHaveAttribute("aria-expanded", "false");
     expect(
-      screen.queryByText(tramitacao.detalhesAdicionais as string),
+      screen.queryByText(tramitacaoVotacao.votacao!.resumo as string),
     ).not.toBeInTheDocument();
-  });
-
-  it("expande e mostra os detalhes adicionais sem placeholder de IA", async () => {
-    render(<TramitacaoItem tramitacao={tramitacao} />);
-
-    await userEvent.click(
-      screen.getByRole("button", { name: /Detalhes da tramitação/ }),
-    );
-
-    expect(
-      screen.getByText(tramitacao.detalhesAdicionais as string),
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/Resumo por IA/)).not.toBeInTheDocument();
-  });
-
-  it("mostra fallback quando não há detalhes adicionais", async () => {
-    render(
-      <TramitacaoItem
-        tramitacao={{ ...tramitacao, detalhesAdicionais: undefined }}
-      />,
-    );
-    await userEvent.click(
-      screen.getByRole("button", { name: /Detalhes da tramitação/ }),
-    );
-
-    expect(
-      screen.getByText("Sem detalhes adicionais registrados."),
-    ).toBeInTheDocument();
   });
 
   it("renderiza placar, resumo e link para votos quando tipo é VOTACAO", async () => {

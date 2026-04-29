@@ -25,51 +25,55 @@ interface TramitacaoItemProps {
 export function TramitacaoItem({ tramitacao }: TramitacaoItemProps) {
   const votacao = tramitacao.tipo === "VOTACAO" ? tramitacao.votacao : undefined;
 
+  if (!votacao) {
+    return (
+      <div className="rounded-lg border border-slate-200 bg-white px-4 py-3">
+        <TramitacaoHeader tramitacao={tramitacao} />
+      </div>
+    );
+  }
+
   return (
     <ExpandablePanel
       ariaLabel={`Detalhes da tramitação: ${tramitacao.descricao}`}
       header={
-        <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-          <div className="flex flex-col gap-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <TramitacaoTipoTag tipo={tramitacao.tipo} />
-            </div>
-            <p className="text-sm font-medium text-slate-900">
-              {tramitacao.descricao}
-            </p>
-            <p className="text-xs text-slate-500">
-              {tramitacao.orgao} · {formatDate(tramitacao.ocorridaEm)}
-            </p>
-          </div>
-          {votacao ? (
+        <TramitacaoHeader
+          tramitacao={tramitacao}
+          trailing={
             <Badge variant={RESULTADO_VARIANT[votacao.resultado]}>
               {RESULTADO_LABEL[votacao.resultado]}
             </Badge>
-          ) : null}
-        </div>
+          }
+        />
       }
     >
-      {votacao ? (
-        <VotacaoConteudo votacao={votacao} />
-      ) : (
-        <TramitacaoConteudo tramitacao={tramitacao} />
-      )}
+      <VotacaoConteudo votacao={votacao} />
     </ExpandablePanel>
   );
 }
 
-function TramitacaoConteudo({ tramitacao }: { tramitacao: Tramitacao }) {
-  if (tramitacao.detalhesAdicionais) {
-    return (
-      <p className="text-sm leading-relaxed text-slate-700">
-        {tramitacao.detalhesAdicionais}
-      </p>
-    );
-  }
+function TramitacaoHeader({
+  tramitacao,
+  trailing,
+}: {
+  tramitacao: Tramitacao;
+  trailing?: React.ReactNode;
+}) {
   return (
-    <p className="text-sm italic text-slate-500">
-      Sem detalhes adicionais registrados.
-    </p>
+    <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+      <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <TramitacaoTipoTag tipo={tramitacao.tipo} />
+        </div>
+        <p className="text-sm font-medium text-slate-900">
+          {tramitacao.descricao}
+        </p>
+        <p className="text-xs text-slate-500">
+          {tramitacao.orgao} · {formatDate(tramitacao.ocorridaEm)}
+        </p>
+      </div>
+      {trailing ?? null}
+    </div>
   );
 }
 

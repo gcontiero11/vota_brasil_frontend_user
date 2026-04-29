@@ -113,8 +113,6 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
       descricao: "Apresentação do projeto em plenário.",
       orgao: "Plenário",
       ocorridaEm: daysAgo(120),
-      detalhesAdicionais:
-        "Apresentação formal do texto original e leitura da ementa.",
     },
     {
       id: "t-001-02",
@@ -131,8 +129,6 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
       descricao: "Designação do relator na Comissão de Educação.",
       orgao: "CEDUC",
       ocorridaEm: daysAgo(90),
-      detalhesAdicionais:
-        "Relatoria designada após acordo entre as lideranças partidárias.",
     },
     {
       id: "t-001-04",
@@ -185,8 +181,6 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
       descricao: "Admissibilidade aprovada pela CCJ.",
       orgao: "CCJ",
       ocorridaEm: daysAgo(150),
-      detalhesAdicionais:
-        "Admissibilidade aprovada por 40 votos a 18, sem declaração de voto em destaque.",
     },
     {
       id: "t-002-vot-01",
@@ -265,8 +259,6 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
       descricao: "Aprovação na Câmara dos Deputados.",
       orgao: "Plenário",
       ocorridaEm: daysAgo(20),
-      detalhesAdicionais:
-        "Aprovada com alterações no texto original, redação final publicada no DCD.",
     },
     {
       id: "t-003-vot-01",
@@ -334,8 +326,6 @@ const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
       descricao: "Audiência pública realizada em comissão especial.",
       orgao: "Comissão Especial",
       ocorridaEm: daysAgo(60),
-      detalhesAdicionais:
-        "Audiência contou com representantes de entidades de trabalhadores e plataformas digitais.",
     },
     {
       id: "t-007-02",

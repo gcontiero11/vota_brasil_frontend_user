@@ -42,7 +42,6 @@ export interface Tramitacao {
   orgao: string;
   /** Data em que a tramitação ocorreu (ISO-8601). */
   ocorridaEm: string;
-  detalhesAdicionais?: string;
   /** Presente quando `tipo === "VOTACAO"`: detalhes da votação realizada. */
   votacao?: Votacao;
 }
