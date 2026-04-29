@@ -17,7 +17,7 @@ import type {
  * implementação, mantendo o contrato.
  */
 
-const FAKE_LATENCY_MS = 800;
+const FAKE_LATENCY_MS = 50;
 
 function simulateLatency(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, FAKE_LATENCY_MS));
