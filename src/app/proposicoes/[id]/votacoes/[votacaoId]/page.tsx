@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getVotacaoById } from "@/features/proposicoes/api";
+import { AISummaryPlaceholder } from "@/features/proposicoes/components/AISummaryPlaceholder";
 import { VotacaoDetalheHeader } from "@/features/proposicoes/components/VotacaoDetalheHeader";
 import { VotosFilters } from "@/features/proposicoes/components/VotosFilters";
 import { VotosTable } from "@/features/proposicoes/components/VotosTable";
@@ -55,6 +56,8 @@ export default async function VotacaoDetalhePage({
       </nav>
 
       <VotacaoDetalheHeader votacao={votacao} />
+
+      <AISummaryPlaceholder message="Ainda não há resumo por IA disponível para esta votação." />
 
       <section className="flex flex-col gap-3">
         <div>
