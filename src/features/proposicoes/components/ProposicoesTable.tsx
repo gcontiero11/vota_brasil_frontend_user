@@ -12,7 +12,7 @@ export function ProposicoesTable({ proposicoes }: ProposicoesTableProps) {
     return (
       <EmptyState
         title="Nenhuma proposição encontrada"
-        description="Ajuste os filtros ou tente um termo de busca diferente."
+        description="Ajuste os filtros e tente novamente."
       />
     );
   }
@@ -20,12 +20,11 @@ export function ProposicoesTable({ proposicoes }: ProposicoesTableProps) {
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-soft">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[780px] border-collapse">
+        <table className="w-full min-w-[720px] border-collapse">
           <thead className="bg-slate-50">
             <tr>
               <Th>Proposição</Th>
               <Th>Ementa</Th>
-              <Th>Autoria</Th>
               <Th>Status</Th>
               <Th>Última mov.</Th>
               <Th className="text-right">Detalhes</Th>

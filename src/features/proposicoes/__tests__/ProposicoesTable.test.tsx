@@ -5,23 +5,23 @@ import type { Proposicao } from "../types";
 
 const proposicoesMock: Proposicao[] = [
   {
-    id: "p-001",
+    id: 1,
+    externalId: 1001,
     tipo: "PL",
     numero: 2345,
     ano: 2024,
     ementa: "Institui o Programa Nacional de Incentivo à Leitura.",
-    autoria: { nome: "Dep. Ana Ribeiro", partido: "PFAM", uf: "SP" },
-    status: "em_tramitacao",
+    status: "Em tramitação",
     ultimaMovimentacaoAt: new Date().toISOString(),
   },
   {
-    id: "p-002",
+    id: 2,
+    externalId: 1002,
     tipo: "PEC",
     numero: 17,
     ano: 2024,
     ementa: "Amplia o direito ao ensino médio em tempo integral.",
-    autoria: { nome: "Dep. Bruno Teixeira" },
-    status: "pronta_para_pauta",
+    status: "Pronta para Pauta no Plenário",
     ultimaMovimentacaoAt: new Date().toISOString(),
   },
 ];
@@ -35,9 +35,8 @@ describe("ProposicoesTable", () => {
     expect(
       screen.getByText(/Institui o Programa Nacional/),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Dep\. Ana Ribeiro/)).toBeInTheDocument();
     expect(screen.getByText("Em tramitação")).toBeInTheDocument();
-    expect(screen.getByText("Pronta para pauta")).toBeInTheDocument();
+    expect(screen.getByText("Pronta para Pauta no Plenário")).toBeInTheDocument();
   });
 
   it("gera link de detalhes por proposição", () => {
@@ -45,7 +44,7 @@ describe("ProposicoesTable", () => {
     const detalhe = screen.getByRole("link", {
       name: /Ver detalhes da proposição PL 2345\/2024/,
     });
-    expect(detalhe).toHaveAttribute("href", "/proposicoes/p-001");
+    expect(detalhe).toHaveAttribute("href", "/proposicoes/1");
   });
 
   it("exibe empty state quando a lista está vazia", () => {

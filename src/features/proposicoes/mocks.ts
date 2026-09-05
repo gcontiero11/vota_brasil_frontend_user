@@ -1,517 +1,542 @@
 import type {
+  ListProposicoesParams,
+  ListVotosParams,
+  Paginated,
   Proposicao,
   ProposicaoDetalhe,
   Tramitacao,
   Votacao,
   VotacaoDetalhe,
-  VotoIndividual,
-  VotoResultado,
+  VotoNominal,
 } from "./types";
 
 /**
  * Dados fictícios — nomes e propostas inventados, sem correspondência com
- * parlamentares ou proposições reais.
+ * parlamentares ou proposições reais. Servem apenas como toggle quando
+ * `NEXT_PUBLIC_USE_MOCKS=true`.
  */
 
 const proposicoes: Proposicao[] = [
   {
-    id: "p-001",
+    id: 1,
+    externalId: 1001,
     tipo: "PL",
     numero: 2345,
     ano: 2024,
     ementa:
       "Institui o Programa Nacional de Incentivo à Leitura em escolas públicas de ensino fundamental.",
-    autoria: { nome: "Dep. Ana Ribeiro", partido: "PFAM", uf: "SP" },
-    status: "em_tramitacao",
+    status: "Aguardando designação de Relator",
     ultimaMovimentacaoAt: daysAgo(2),
   },
   {
-    id: "p-002",
+    id: 2,
+    externalId: 1002,
     tipo: "PEC",
     numero: 17,
     ano: 2024,
     ementa:
       "Altera o art. 208 da Constituição para ampliar o direito ao ensino médio em tempo integral.",
-    autoria: { nome: "Dep. Bruno Teixeira", partido: "PPRO", uf: "MG" },
-    status: "pronta_para_pauta",
+    status: "Pronta para Pauta no Plenário",
     ultimaMovimentacaoAt: hoursAgo(5),
   },
   {
-    id: "p-003",
+    id: 3,
+    externalId: 1003,
     tipo: "MPV",
     numero: 1188,
     ano: 2025,
     ementa:
       "Dispõe sobre medidas emergenciais de apoio à agricultura familiar em regiões afetadas por estiagem.",
-    autoria: { nome: "Poder Executivo" },
-    status: "aprovada",
+    status: "Transformada em Lei",
     ultimaMovimentacaoAt: daysAgo(9),
   },
   {
-    id: "p-004",
+    id: 4,
+    externalId: 1004,
     tipo: "PLP",
     numero: 42,
     ano: 2023,
     ementa:
       "Dispõe sobre normas gerais para a cobrança de tributos municipais sobre plataformas digitais de transporte.",
-    autoria: { nome: "Dep. Clara Monteiro", partido: "PNOV", uf: "RS" },
-    status: "arquivada",
+    status: "Arquivada",
     ultimaMovimentacaoAt: daysAgo(220),
   },
   {
-    id: "p-005",
+    id: 5,
+    externalId: 1005,
     tipo: "PDL",
     numero: 301,
     ano: 2024,
     ementa:
       "Susta os efeitos do Decreto nº 9.999/2024 que regulamenta a concessão de subsídios à aviação regional.",
-    autoria: { nome: "Dep. Daniel Barros", partido: "PLIB", uf: "BA" },
-    status: "rejeitada",
+    status: "Rejeitada",
     ultimaMovimentacaoAt: daysAgo(45),
   },
   {
-    id: "p-006",
+    id: 6,
+    externalId: 1006,
     tipo: "PL",
     numero: 501,
     ano: 2025,
     ementa:
       "Cria a Política Nacional de Dados Abertos para Municípios e institui diretrizes para interoperabilidade.",
-    autoria: { nome: "Dep. Eduarda Lima", partido: "PCID", uf: "PE" },
-    status: "em_tramitacao",
+    status: "Em tramitação",
     ultimaMovimentacaoAt: daysAgo(14),
   },
   {
-    id: "p-007",
+    id: 7,
+    externalId: 1007,
     tipo: "PL",
     numero: 8820,
     ano: 2023,
     ementa:
       "Regulamenta o trabalho por aplicativos e estabelece direitos mínimos para motoristas e entregadores.",
-    autoria: { nome: "Dep. Felipe Araújo", partido: "PTRA", uf: "RJ" },
-    status: "pronta_para_pauta",
+    status: "Pronta para Pauta no Plenário",
     ultimaMovimentacaoAt: daysAgo(30),
   },
   {
-    id: "p-008",
+    id: 8,
+    externalId: 1008,
     tipo: "PEC",
     numero: 9,
     ano: 2025,
     ementa:
       "Inclui o saneamento básico universal como direito social no art. 6º da Constituição Federal.",
-    autoria: { nome: "Dep. Giovana Souza", partido: "PDEM", uf: "CE" },
-    status: "em_tramitacao",
+    status: "Em tramitação",
     ultimaMovimentacaoAt: hoursAgo(18),
   },
 ];
 
-const tramitacoesPorProposicao: Record<string, Tramitacao[]> = {
-  "p-001": [
+const tramitacoesPorProposicao: Record<number, Tramitacao[]> = {
+  1: [
     {
-      id: "t-001-01",
-      proposicaoId: "p-001",
-      tipo: "DISTRIBUICAO",
-      descricao: "Apresentação do projeto em plenário.",
-      orgao: "Plenário",
-      ocorridaEm: daysAgo(120),
+      id: 101,
+      proposicaoId: 1,
+      externalId: null,
+      sequencia: 1,
+      dataHora: daysAgo(120),
+      siglaOrgao: "PLEN",
+      descricaoSituacao: "Apresentação do projeto",
+      despacho: "Apresentação do projeto em plenário.",
+      regime: "Ordinário",
     },
     {
-      id: "t-001-02",
-      proposicaoId: "p-001",
-      tipo: "DISTRIBUICAO",
-      descricao: "Distribuição à Comissão de Educação.",
-      orgao: "CEDUC",
-      ocorridaEm: daysAgo(110),
+      id: 102,
+      proposicaoId: 1,
+      externalId: null,
+      sequencia: 2,
+      dataHora: daysAgo(110),
+      siglaOrgao: "CEDUC",
+      descricaoSituacao: "Distribuição",
+      despacho: "Distribuição à Comissão de Educação.",
+      regime: "Ordinário",
     },
     {
-      id: "t-001-03",
-      proposicaoId: "p-001",
-      tipo: "RELATOR",
-      descricao: "Designação do relator na Comissão de Educação.",
-      orgao: "CEDUC",
-      ocorridaEm: daysAgo(90),
+      id: 103,
+      proposicaoId: 1,
+      externalId: null,
+      sequencia: 3,
+      dataHora: daysAgo(90),
+      siglaOrgao: "CEDUC",
+      descricaoSituacao: "Designação de Relator",
+      despacho: "Designação do relator na Comissão de Educação.",
+      regime: "Ordinário",
     },
     {
-      id: "t-001-04",
-      proposicaoId: "p-001",
-      tipo: "PARECER",
-      descricao: "Apresentação de parecer favorável com emendas.",
-      orgao: "CEDUC",
-      ocorridaEm: daysAgo(30),
+      id: 104,
+      proposicaoId: 1,
+      externalId: null,
+      sequencia: 4,
+      dataHora: daysAgo(30),
+      siglaOrgao: "CEDUC",
+      descricaoSituacao: "Apresentação de Parecer",
+      despacho: "Apresentação de parecer favorável com emendas.",
+      regime: "Ordinário",
     },
     {
-      id: "t-001-vot-01",
-      proposicaoId: "p-001",
-      tipo: "VOTACAO",
-      descricao: "Aprovação do parecer do relator.",
-      orgao: "CEDUC",
-      ocorridaEm: daysAgo(30),
-      votacao: {
-        id: "v-001-01",
-        proposicaoId: "p-001",
-        titulo: "Aprovação do parecer do relator",
-        ocorridaEm: daysAgo(30),
-        resultado: "aprovada",
-        placar: { sim: 30, nao: 12, abstencao: 6, ausente: 2 },
-        resumo:
-          "Comissão delibera sobre o parecer favorável com emendas substitutivas apresentado pelo relator.",
-      },
+      id: 105,
+      proposicaoId: 1,
+      externalId: null,
+      sequencia: 5,
+      dataHora: daysAgo(30),
+      siglaOrgao: "CEDUC",
+      descricaoSituacao: "Aprovação de Parecer",
+      despacho: "Aprovação do parecer do relator.",
+      regime: "Ordinário",
     },
     {
-      id: "t-001-05",
-      proposicaoId: "p-001",
-      tipo: "ENCAMINHAMENTO",
-      descricao: "Requerimento de urgência em análise.",
-      orgao: "Mesa Diretora",
-      ocorridaEm: daysAgo(2),
-    },
-  ],
-  "p-002": [
-    {
-      id: "t-002-01",
-      proposicaoId: "p-002",
-      tipo: "DISTRIBUICAO",
-      descricao: "Protocolo da Proposta de Emenda à Constituição.",
-      orgao: "Mesa Diretora",
-      ocorridaEm: daysAgo(200),
-    },
-    {
-      id: "t-002-02",
-      proposicaoId: "p-002",
-      tipo: "PARECER",
-      descricao: "Admissibilidade aprovada pela CCJ.",
-      orgao: "CCJ",
-      ocorridaEm: daysAgo(150),
-    },
-    {
-      id: "t-002-vot-01",
-      proposicaoId: "p-002",
-      tipo: "VOTACAO",
-      descricao: "Votação de admissibilidade na CCJ.",
-      orgao: "CCJ",
-      ocorridaEm: daysAgo(150),
-      votacao: {
-        id: "v-002-01",
-        proposicaoId: "p-002",
-        titulo: "Admissibilidade na CCJ",
-        ocorridaEm: daysAgo(150),
-        resultado: "aprovada",
-        placar: { sim: 32, nao: 14, abstencao: 2, ausente: 2 },
-        resumo:
-          "CCJ delibera se a PEC atende aos requisitos formais e materiais para prosseguir na tramitação.",
-      },
-    },
-    {
-      id: "t-002-03",
-      proposicaoId: "p-002",
-      tipo: "ENCAMINHAMENTO",
-      descricao: "Designação de Comissão Especial.",
-      orgao: "Mesa Diretora",
-      ocorridaEm: daysAgo(120),
-    },
-    {
-      id: "t-002-04",
-      proposicaoId: "p-002",
-      tipo: "PARECER",
-      descricao: "Aprovação do parecer do relator na Comissão Especial.",
-      orgao: "Comissão Especial",
-      ocorridaEm: daysAgo(20),
-    },
-    {
-      id: "t-002-vot-02",
-      proposicaoId: "p-002",
-      tipo: "VOTACAO",
-      descricao: "Votação do parecer na Comissão Especial.",
-      orgao: "Comissão Especial",
-      ocorridaEm: daysAgo(20),
-      votacao: {
-        id: "v-002-02",
-        proposicaoId: "p-002",
-        titulo: "Aprovação de parecer — Comissão Especial",
-        ocorridaEm: daysAgo(20),
-        resultado: "aprovada",
-        placar: { sim: 28, nao: 16, abstencao: 4, ausente: 2 },
-        resumo:
-          "Comissão Especial decide sobre o parecer final do relator antes do encaminhamento ao plenário.",
-      },
+      id: 106,
+      proposicaoId: 1,
+      externalId: null,
+      sequencia: 6,
+      dataHora: daysAgo(2),
+      siglaOrgao: "MESA",
+      descricaoSituacao: "Requerimento de Urgência",
+      despacho: "Requerimento de urgência em análise.",
+      regime: "Ordinário",
     },
   ],
-  "p-003": [
+  2: [
     {
-      id: "t-003-01",
-      proposicaoId: "p-003",
-      tipo: "DISTRIBUICAO",
-      descricao: "Edição da Medida Provisória pelo Poder Executivo.",
-      orgao: "Presidência da República",
-      ocorridaEm: daysAgo(80),
+      id: 201,
+      proposicaoId: 2,
+      externalId: null,
+      sequencia: 1,
+      dataHora: daysAgo(200),
+      siglaOrgao: "MESA",
+      descricaoSituacao: "Apresentação",
+      despacho: "Protocolo da Proposta de Emenda à Constituição.",
+      regime: "Especial",
     },
     {
-      id: "t-003-02",
-      proposicaoId: "p-003",
-      tipo: "ENCAMINHAMENTO",
-      descricao: "Instalação da comissão mista.",
-      orgao: "Comissão Mista",
-      ocorridaEm: daysAgo(60),
+      id: 202,
+      proposicaoId: 2,
+      externalId: null,
+      sequencia: 2,
+      dataHora: daysAgo(150),
+      siglaOrgao: "CCJC",
+      descricaoSituacao: "Aprovação de Admissibilidade",
+      despacho: "Admissibilidade aprovada pela CCJ.",
+      regime: "Especial",
     },
     {
-      id: "t-003-03",
-      proposicaoId: "p-003",
-      tipo: "FINALIZACAO",
-      descricao: "Aprovação na Câmara dos Deputados.",
-      orgao: "Plenário",
-      ocorridaEm: daysAgo(20),
+      id: 203,
+      proposicaoId: 2,
+      externalId: null,
+      sequencia: 3,
+      dataHora: daysAgo(120),
+      siglaOrgao: "MESA",
+      descricaoSituacao: "Designação de Comissão Especial",
+      despacho: "Designação de Comissão Especial.",
+      regime: "Especial",
     },
     {
-      id: "t-003-vot-01",
-      proposicaoId: "p-003",
-      tipo: "VOTACAO",
-      descricao: "Votação em plenário.",
-      orgao: "Plenário",
-      ocorridaEm: daysAgo(20),
-      votacao: {
-        id: "v-003-01",
-        proposicaoId: "p-003",
-        titulo: "Aprovação em plenário",
-        ocorridaEm: daysAgo(20),
-        resultado: "aprovada",
-        placar: { sim: 30, nao: 10, abstencao: 3, ausente: 7 },
-        resumo:
-          "Câmara delibera sobre a conversão da Medida Provisória em lei, com o texto oriundo da comissão mista.",
-      },
-    },
-  ],
-  // p-004 propositalmente sem tramitações para exercitar empty state.
-  "p-005": [
-    {
-      id: "t-005-vot-01",
-      proposicaoId: "p-005",
-      tipo: "VOTACAO",
-      descricao: "Votação nominal do PDL em plenário.",
-      orgao: "Plenário",
-      ocorridaEm: daysAgo(45),
-      votacao: {
-        id: "v-005-01",
-        proposicaoId: "p-005",
-        titulo: "Votação nominal do PDL em plenário",
-        ocorridaEm: daysAgo(45),
-        resultado: "rejeitada",
-        placar: { sim: 18, nao: 28, abstencao: 3, ausente: 1 },
-        resumo:
-          "Plenário decide se susta os efeitos do decreto de subsídios à aviação regional.",
-      },
+      id: 204,
+      proposicaoId: 2,
+      externalId: null,
+      sequencia: 4,
+      dataHora: daysAgo(20),
+      siglaOrgao: "CESP",
+      descricaoSituacao: "Aprovação de Parecer",
+      despacho: "Aprovação do parecer do relator na Comissão Especial.",
+      regime: "Especial",
     },
   ],
-  "p-006": [
+  3: [
     {
-      id: "t-006-01",
-      proposicaoId: "p-006",
-      tipo: "DISTRIBUICAO",
-      descricao: "Apresentação em plenário.",
-      orgao: "Plenário",
-      ocorridaEm: daysAgo(60),
+      id: 301,
+      proposicaoId: 3,
+      externalId: null,
+      sequencia: 1,
+      dataHora: daysAgo(80),
+      siglaOrgao: "PR",
+      descricaoSituacao: "Edição",
+      despacho: "Edição da Medida Provisória pelo Poder Executivo.",
+      regime: "Urgência",
     },
     {
-      id: "t-006-02",
-      proposicaoId: "p-006",
-      tipo: "ENCAMINHAMENTO",
-      descricao: "Encaminhamento para CCTCI.",
-      orgao: "CCTCI",
-      ocorridaEm: daysAgo(14),
-    },
-  ],
-  "p-007": [
-    {
-      id: "t-007-01",
-      proposicaoId: "p-007",
-      tipo: "ENCAMINHAMENTO",
-      descricao: "Audiência pública realizada em comissão especial.",
-      orgao: "Comissão Especial",
-      ocorridaEm: daysAgo(60),
+      id: 302,
+      proposicaoId: 3,
+      externalId: null,
+      sequencia: 2,
+      dataHora: daysAgo(60),
+      siglaOrgao: "CMMPV",
+      descricaoSituacao: "Instalação de Comissão Mista",
+      despacho: "Instalação da comissão mista.",
+      regime: "Urgência",
     },
     {
-      id: "t-007-02",
-      proposicaoId: "p-007",
-      tipo: "PARECER",
-      descricao: "Parecer do relator apresentado.",
-      orgao: "Comissão Especial",
-      ocorridaEm: daysAgo(45),
-    },
-    {
-      id: "t-007-vot-01",
-      proposicaoId: "p-007",
-      tipo: "VOTACAO",
-      descricao: "Votação do parecer na Comissão Especial.",
-      orgao: "Comissão Especial",
-      ocorridaEm: daysAgo(45),
-      votacao: {
-        id: "v-007-01",
-        proposicaoId: "p-007",
-        titulo: "Aprovação de parecer na Comissão Especial",
-        ocorridaEm: daysAgo(45),
-        resultado: "aprovada",
-        placar: { sim: 26, nao: 18, abstencao: 4, ausente: 2 },
-        resumo:
-          "Comissão Especial vota o parecer do relator que regulamenta o trabalho mediado por plataformas digitais.",
-      },
-    },
-    {
-      id: "t-007-03",
-      proposicaoId: "p-007",
-      tipo: "ENCAMINHAMENTO",
-      descricao: "Aguardando designação em plenário.",
-      orgao: "Plenário",
-      ocorridaEm: daysAgo(30),
-    },
-    {
-      id: "t-007-vot-02",
-      proposicaoId: "p-007",
-      tipo: "VOTACAO",
-      descricao: "Votação do requerimento de urgência.",
-      orgao: "Plenário",
-      ocorridaEm: daysAgo(30),
-      votacao: {
-        id: "v-007-02",
-        proposicaoId: "p-007",
-        titulo: "Urgência — votação pendente",
-        ocorridaEm: daysAgo(30),
-        resultado: "pendente",
-        resumo:
-          "Plenário aguarda decisão sobre o requerimento de urgência apresentado pelas lideranças.",
-      },
+      id: 303,
+      proposicaoId: 3,
+      externalId: null,
+      sequencia: 3,
+      dataHora: daysAgo(20),
+      siglaOrgao: "PLEN",
+      descricaoSituacao: "Aprovação na Câmara",
+      despacho: "Aprovação na Câmara dos Deputados.",
+      regime: "Urgência",
     },
   ],
-  "p-008": [
+  // 4 propositalmente sem tramitações para exercitar empty state.
+  5: [
     {
-      id: "t-008-01",
-      proposicaoId: "p-008",
-      tipo: "DISTRIBUICAO",
-      descricao: "Apresentação da PEC.",
-      orgao: "Mesa Diretora",
-      ocorridaEm: hoursAgo(36),
+      id: 501,
+      proposicaoId: 5,
+      externalId: null,
+      sequencia: 1,
+      dataHora: daysAgo(45),
+      siglaOrgao: "PLEN",
+      descricaoSituacao: "Votação Nominal",
+      despacho: "Votação nominal do PDL em plenário.",
+      regime: "Ordinário",
+    },
+  ],
+  6: [
+    {
+      id: 601,
+      proposicaoId: 6,
+      externalId: null,
+      sequencia: 1,
+      dataHora: daysAgo(60),
+      siglaOrgao: "PLEN",
+      descricaoSituacao: "Apresentação",
+      despacho: "Apresentação em plenário.",
+      regime: "Ordinário",
+    },
+    {
+      id: 602,
+      proposicaoId: 6,
+      externalId: null,
+      sequencia: 2,
+      dataHora: daysAgo(14),
+      siglaOrgao: "CCTCI",
+      descricaoSituacao: "Encaminhamento",
+      despacho: "Encaminhamento para CCTCI.",
+      regime: "Ordinário",
+    },
+  ],
+  7: [
+    {
+      id: 701,
+      proposicaoId: 7,
+      externalId: null,
+      sequencia: 1,
+      dataHora: daysAgo(60),
+      siglaOrgao: "CESP",
+      descricaoSituacao: "Audiência Pública",
+      despacho: "Audiência pública realizada em comissão especial.",
+      regime: "Ordinário",
+    },
+    {
+      id: 702,
+      proposicaoId: 7,
+      externalId: null,
+      sequencia: 2,
+      dataHora: daysAgo(45),
+      siglaOrgao: "CESP",
+      descricaoSituacao: "Apresentação de Parecer",
+      despacho: "Parecer do relator apresentado.",
+      regime: "Ordinário",
+    },
+    {
+      id: 703,
+      proposicaoId: 7,
+      externalId: null,
+      sequencia: 3,
+      dataHora: daysAgo(45),
+      siglaOrgao: "CESP",
+      descricaoSituacao: "Aprovação de Parecer",
+      despacho: "Aprovação do parecer na Comissão Especial.",
+      regime: "Ordinário",
+    },
+    {
+      id: 704,
+      proposicaoId: 7,
+      externalId: null,
+      sequencia: 4,
+      dataHora: daysAgo(30),
+      siglaOrgao: "PLEN",
+      descricaoSituacao: "Aguardando Pauta",
+      despacho: "Aguardando designação em plenário.",
+      regime: "Urgência",
+    },
+  ],
+  8: [
+    {
+      id: 801,
+      proposicaoId: 8,
+      externalId: null,
+      sequencia: 1,
+      dataHora: hoursAgo(36),
+      siglaOrgao: "MESA",
+      descricaoSituacao: "Apresentação",
+      despacho: "Apresentação da PEC.",
+      regime: "Especial",
     },
   ],
 };
 
-const descricoesIA: Record<string, string | null> = {
-  "p-001":
-    "O projeto propõe a criação de um programa federal permanente para estimular práticas de leitura em escolas de ensino fundamental, com previsão de repasses a bibliotecas escolares e formação de mediadores.",
-  "p-002":
-    "A PEC amplia o direito constitucional ao ensino médio em tempo integral, prevendo metas de expansão progressiva pelos entes federados e regra de transição em dez anos.",
-  "p-003":
-    "A Medida Provisória estabelece linhas de crédito emergenciais, renegociação de dívidas e assistência técnica a produtores familiares em áreas com situação reconhecida de emergência.",
-  "p-004": null,
-  "p-005":
-    "O Decreto Legislativo buscava sustar regulamento que ampliava subsídios federais à aviação regional sob a justificativa de revisão fiscal. Foi rejeitado em plenário.",
-  "p-006": null,
-  "p-007":
-    "O projeto regulamenta o trabalho mediado por plataformas digitais, definindo direitos mínimos, contribuição previdenciária e regras de transparência algorítmica para motoristas e entregadores.",
-  "p-008":
-    "A PEC inclui saneamento básico entre os direitos sociais previstos no art. 6º da Constituição, com impacto em políticas públicas de universalização do serviço.",
+const votacoesPorProposicao: Record<number, Votacao[]> = {
+  1: [
+    {
+      id: 1001,
+      externalId: "1-1",
+      proposicaoPrincipalId: 1,
+      dataHora: daysAgo(30),
+      descricao: "Aprovação do parecer do relator",
+      resultado: "aprovado",
+      tipoRaw: "Nominal",
+    },
+  ],
+  2: [
+    {
+      id: 2001,
+      externalId: "2-1",
+      proposicaoPrincipalId: 2,
+      dataHora: daysAgo(150),
+      descricao: "Admissibilidade na CCJ",
+      resultado: "aprovado",
+      tipoRaw: "Nominal",
+    },
+    {
+      id: 2002,
+      externalId: "2-2",
+      proposicaoPrincipalId: 2,
+      dataHora: daysAgo(20),
+      descricao: "Aprovação de parecer — Comissão Especial",
+      resultado: "aprovado",
+      tipoRaw: "Nominal",
+    },
+  ],
+  3: [
+    {
+      id: 3001,
+      externalId: "3-1",
+      proposicaoPrincipalId: 3,
+      dataHora: daysAgo(20),
+      descricao: "Aprovação em plenário",
+      resultado: "aprovado",
+      tipoRaw: "Nominal",
+    },
+  ],
+  5: [
+    {
+      id: 5001,
+      externalId: "5-1",
+      proposicaoPrincipalId: 5,
+      dataHora: daysAgo(45),
+      descricao: "Votação nominal do PDL em plenário",
+      resultado: "rejeitado",
+      tipoRaw: "Nominal",
+    },
+  ],
+  7: [
+    {
+      id: 7001,
+      externalId: "7-1",
+      proposicaoPrincipalId: 7,
+      dataHora: daysAgo(45),
+      descricao: "Aprovação de parecer na Comissão Especial",
+      resultado: "aprovado",
+      tipoRaw: "Nominal",
+    },
+    {
+      id: 7002,
+      externalId: "7-2",
+      proposicaoPrincipalId: 7,
+      dataHora: daysAgo(30),
+      descricao: "Urgência — votação pendente",
+      resultado: null,
+      tipoRaw: "Nominal",
+    },
+  ],
 };
 
-const DEPUTADOS_POOL: Array<{ deputado: string; partido: string; uf: string }> = [
-  { deputado: "Ana Ribeiro", partido: "PFAM", uf: "SP" },
-  { deputado: "Bruno Teixeira", partido: "PPRO", uf: "MG" },
-  { deputado: "Clara Monteiro", partido: "PNOV", uf: "RS" },
-  { deputado: "Daniel Barros", partido: "PLIB", uf: "BA" },
-  { deputado: "Felipe Araújo", partido: "PTRA", uf: "RJ" },
-  { deputado: "Giovana Souza", partido: "PDEM", uf: "CE" },
-  { deputado: "Eduarda Lima", partido: "PCID", uf: "PE" },
-  { deputado: "Helena Cardoso", partido: "PFAM", uf: "SC" },
-  { deputado: "Igor Pimenta", partido: "PPRO", uf: "GO" },
-  { deputado: "Juliana Freitas", partido: "PNOV", uf: "ES" },
-  { deputado: "Karla Mendonça", partido: "PLIB", uf: "PA" },
-  { deputado: "Marcos Vieira", partido: "PTRA", uf: "PR" },
-  { deputado: "Nathalia Ramos", partido: "PDEM", uf: "MT" },
-  { deputado: "Lucas Andrade", partido: "PCID", uf: "AM" },
-  { deputado: "Otávio Correia", partido: "PFAM", uf: "DF" },
-  { deputado: "Patrícia Moura", partido: "PPRO", uf: "AL" },
-  { deputado: "Rafael Dias", partido: "PNOV", uf: "PB" },
-  { deputado: "Sofia Nascimento", partido: "PLIB", uf: "MS" },
-  { deputado: "Úrsula Pinto", partido: "PTRA", uf: "MA" },
-  { deputado: "Vinicius Castro", partido: "PDEM", uf: "PI" },
-  { deputado: "Tiago Batista", partido: "PCID", uf: "TO" },
-  { deputado: "Wagner Siqueira", partido: "PFAM", uf: "SE" },
-  { deputado: "Yasmin Rocha", partido: "PPRO", uf: "RN" },
-  { deputado: "Zeca Nogueira", partido: "PNOV", uf: "AC" },
-  { deputado: "Alice Farias", partido: "PLIB", uf: "RR" },
-  { deputado: "Cíntia Brandão", partido: "PTRA", uf: "AP" },
-  { deputado: "Diego Henriques", partido: "PDEM", uf: "RO" },
-  { deputado: "Breno Tavares", partido: "PCID", uf: "SP" },
-  { deputado: "Érica Pires", partido: "PFAM", uf: "MG" },
-  { deputado: "Fábio Moura", partido: "PPRO", uf: "RJ" },
-  { deputado: "Gabriela Ferraz", partido: "PNOV", uf: "BA" },
-  { deputado: "Hugo Vasconcelos", partido: "PLIB", uf: "RS" },
-  { deputado: "João Fontes", partido: "PTRA", uf: "PE" },
-  { deputado: "Larissa Moraes", partido: "PDEM", uf: "CE" },
-  { deputado: "Isabela Neves", partido: "PCID", uf: "PR" },
-  { deputado: "Murilo Paiva", partido: "PFAM", uf: "GO" },
-  { deputado: "Nina Guedes", partido: "PPRO", uf: "SC" },
-  { deputado: "Orlando Sampaio", partido: "PNOV", uf: "ES" },
-  { deputado: "Paula Azevedo", partido: "PLIB", uf: "PA" },
-  { deputado: "Ricardo Tonelli", partido: "PTRA", uf: "DF" },
-  { deputado: "Sabrina Lobo", partido: "PDEM", uf: "MT" },
-  { deputado: "Quésia Ventura", partido: "PCID", uf: "AM" },
-  { deputado: "Túlio Marinho", partido: "PFAM", uf: "AL" },
-  { deputado: "Viviane Caldas", partido: "PPRO", uf: "PB" },
-  { deputado: "Xavier Rezende", partido: "PNOV", uf: "MS" },
-  { deputado: "Yuri Campelo", partido: "PLIB", uf: "MA" },
-  { deputado: "Zélia Paz", partido: "PTRA", uf: "PI" },
-  { deputado: "Antônio Cabral", partido: "PDEM", uf: "TO" },
-  { deputado: "Beatriz Magalhães", partido: "PCID", uf: "SE" },
-  { deputado: "Celso Furlan", partido: "PFAM", uf: "RN" },
+const DEPUTADOS_POOL: Array<{
+  id: number;
+  nome: string;
+  siglaPartido: string;
+  siglaUf: string;
+}> = [
+  { id: 1, nome: "Ana Ribeiro", siglaPartido: "PFAM", siglaUf: "SP" },
+  { id: 2, nome: "Bruno Teixeira", siglaPartido: "PPRO", siglaUf: "MG" },
+  { id: 3, nome: "Clara Monteiro", siglaPartido: "PNOV", siglaUf: "RS" },
+  { id: 4, nome: "Daniel Barros", siglaPartido: "PLIB", siglaUf: "BA" },
+  { id: 5, nome: "Felipe Araújo", siglaPartido: "PTRA", siglaUf: "RJ" },
+  { id: 6, nome: "Giovana Souza", siglaPartido: "PDEM", siglaUf: "CE" },
+  { id: 7, nome: "Eduarda Lima", siglaPartido: "PCID", siglaUf: "PE" },
+  { id: 8, nome: "Helena Cardoso", siglaPartido: "PFAM", siglaUf: "SC" },
+  { id: 9, nome: "Igor Pimenta", siglaPartido: "PPRO", siglaUf: "GO" },
+  { id: 10, nome: "Juliana Freitas", siglaPartido: "PNOV", siglaUf: "ES" },
+  { id: 11, nome: "Karla Mendonça", siglaPartido: "PLIB", siglaUf: "PA" },
+  { id: 12, nome: "Marcos Vieira", siglaPartido: "PTRA", siglaUf: "PR" },
+  { id: 13, nome: "Nathalia Ramos", siglaPartido: "PDEM", siglaUf: "MT" },
+  { id: 14, nome: "Lucas Andrade", siglaPartido: "PCID", siglaUf: "AM" },
+  { id: 15, nome: "Otávio Correia", siglaPartido: "PFAM", siglaUf: "DF" },
+  { id: 16, nome: "Patrícia Moura", siglaPartido: "PPRO", siglaUf: "AL" },
+  { id: 17, nome: "Rafael Dias", siglaPartido: "PNOV", siglaUf: "PB" },
+  { id: 18, nome: "Sofia Nascimento", siglaPartido: "PLIB", siglaUf: "MS" },
+  { id: 19, nome: "Úrsula Pinto", siglaPartido: "PTRA", siglaUf: "MA" },
+  { id: 20, nome: "Vinicius Castro", siglaPartido: "PDEM", siglaUf: "PI" },
+  { id: 21, nome: "Tiago Batista", siglaPartido: "PCID", siglaUf: "TO" },
+  { id: 22, nome: "Wagner Siqueira", siglaPartido: "PFAM", siglaUf: "SE" },
+  { id: 23, nome: "Yasmin Rocha", siglaPartido: "PPRO", siglaUf: "RN" },
+  { id: 24, nome: "Zeca Nogueira", siglaPartido: "PNOV", siglaUf: "AC" },
+  { id: 25, nome: "Alice Farias", siglaPartido: "PLIB", siglaUf: "RR" },
+  { id: 26, nome: "Cíntia Brandão", siglaPartido: "PTRA", siglaUf: "AP" },
+  { id: 27, nome: "Diego Henriques", siglaPartido: "PDEM", siglaUf: "RO" },
+  { id: 28, nome: "Breno Tavares", siglaPartido: "PCID", siglaUf: "SP" },
+  { id: 29, nome: "Érica Pires", siglaPartido: "PFAM", siglaUf: "MG" },
+  { id: 30, nome: "Fábio Moura", siglaPartido: "PPRO", siglaUf: "RJ" },
+  { id: 31, nome: "Gabriela Ferraz", siglaPartido: "PNOV", siglaUf: "BA" },
+  { id: 32, nome: "Hugo Vasconcelos", siglaPartido: "PLIB", siglaUf: "RS" },
+  { id: 33, nome: "João Fontes", siglaPartido: "PTRA", siglaUf: "PE" },
+  { id: 34, nome: "Larissa Moraes", siglaPartido: "PDEM", siglaUf: "CE" },
+  { id: 35, nome: "Isabela Neves", siglaPartido: "PCID", siglaUf: "PR" },
+  { id: 36, nome: "Murilo Paiva", siglaPartido: "PFAM", siglaUf: "GO" },
+  { id: 37, nome: "Nina Guedes", siglaPartido: "PPRO", siglaUf: "SC" },
+  { id: 38, nome: "Orlando Sampaio", siglaPartido: "PNOV", siglaUf: "ES" },
+  { id: 39, nome: "Paula Azevedo", siglaPartido: "PLIB", siglaUf: "PA" },
+  { id: 40, nome: "Ricardo Tonelli", siglaPartido: "PTRA", siglaUf: "DF" },
+  { id: 41, nome: "Sabrina Lobo", siglaPartido: "PDEM", siglaUf: "MT" },
+  { id: 42, nome: "Quésia Ventura", siglaPartido: "PCID", siglaUf: "AM" },
+  { id: 43, nome: "Túlio Marinho", siglaPartido: "PFAM", siglaUf: "AL" },
+  { id: 44, nome: "Viviane Caldas", siglaPartido: "PPRO", siglaUf: "PB" },
+  { id: 45, nome: "Xavier Rezende", siglaPartido: "PNOV", siglaUf: "MS" },
+  { id: 46, nome: "Yuri Campelo", siglaPartido: "PLIB", siglaUf: "MA" },
+  { id: 47, nome: "Zélia Paz", siglaPartido: "PTRA", siglaUf: "PI" },
+  { id: 48, nome: "Antônio Cabral", siglaPartido: "PDEM", siglaUf: "TO" },
+  { id: 49, nome: "Beatriz Magalhães", siglaPartido: "PCID", siglaUf: "SE" },
+  { id: 50, nome: "Celso Furlan", siglaPartido: "PFAM", siglaUf: "RN" },
 ];
 
-const VOTO_ORDER: VotoResultado[] = [
-  "sim",
-  "nao",
-  "abstencao",
-  "ausente",
-  "obstrucao",
-];
+const VOTO_ORDER = ["Sim", "Não", "Abstenção", "Ausente", "Obstrução"] as const;
 
 function buildVotos(
-  votacaoId: string,
-  counts: Partial<Record<VotoResultado, number>>,
-): VotoIndividual[] {
-  const sequence: VotoResultado[] = [];
-  for (const resultado of VOTO_ORDER) {
-    const n = counts[resultado] ?? 0;
-    for (let i = 0; i < n; i++) sequence.push(resultado);
+  votacaoId: number,
+  counts: Partial<Record<(typeof VOTO_ORDER)[number], number>>,
+): VotoNominal[] {
+  const sequence: string[] = [];
+  for (const voto of VOTO_ORDER) {
+    const n = counts[voto] ?? 0;
+    for (let i = 0; i < n; i++) sequence.push(voto);
   }
   if (sequence.length > DEPUTADOS_POOL.length) {
     throw new Error(
       `buildVotos: ${votacaoId} excede o pool de ${DEPUTADOS_POOL.length} deputados.`,
     );
   }
-  return sequence.map((resultado, i) => {
+  return sequence.map((votoRaw, i) => {
     const dep = DEPUTADOS_POOL[i]!;
     return {
-      id: `${votacaoId}-voto-${String(i + 1).padStart(2, "0")}`,
-      deputado: dep.deputado,
-      partido: dep.partido,
-      uf: dep.uf,
-      resultado,
+      id: votacaoId * 100 + i + 1,
+      votacaoId,
+      deputadoId: dep.id,
+      votoRaw,
+      deputado: {
+        id: dep.id,
+        nome: dep.nome,
+        siglaPartido: dep.siglaPartido,
+        siglaUf: dep.siglaUf,
+      },
     };
   });
 }
 
-const votosPorVotacao: Record<string, VotoIndividual[]> = {
-  "v-001-01": buildVotos("v-001-01", { sim: 30, nao: 12, abstencao: 6, ausente: 2 }),
-  "v-002-01": buildVotos("v-002-01", { sim: 32, nao: 14, abstencao: 2, ausente: 2 }),
-  "v-002-02": buildVotos("v-002-02", { sim: 28, nao: 16, abstencao: 4, ausente: 2 }),
-  "v-003-01": buildVotos("v-003-01", { sim: 30, nao: 10, abstencao: 3, ausente: 7 }),
-  "v-005-01": buildVotos("v-005-01", { sim: 18, nao: 28, abstencao: 3, ausente: 1 }),
-  "v-007-01": buildVotos("v-007-01", { sim: 26, nao: 18, abstencao: 4, ausente: 2 }),
-  "v-007-02": [],
+const votosPorVotacao: Record<number, VotoNominal[]> = {
+  1001: buildVotos(1001, { Sim: 30, Não: 12, Abstenção: 6, Ausente: 2 }),
+  2001: buildVotos(2001, { Sim: 32, Não: 14, Abstenção: 2, Ausente: 2 }),
+  2002: buildVotos(2002, { Sim: 28, Não: 16, Abstenção: 4, Ausente: 2 }),
+  3001: buildVotos(3001, { Sim: 30, Não: 10, Abstenção: 3, Ausente: 7 }),
+  5001: buildVotos(5001, { Sim: 18, Não: 28, Abstenção: 3, Ausente: 1 }),
+  7001: buildVotos(7001, { Sim: 26, Não: 18, Abstenção: 4, Ausente: 2 }),
+  7002: [],
 };
 
-function findVotacaoById(votacaoId: string): Votacao | null {
-  for (const lista of Object.values(tramitacoesPorProposicao)) {
-    for (const t of lista) {
-      if (t.tipo === "VOTACAO" && t.votacao?.id === votacaoId) {
-        return t.votacao;
-      }
-    }
+function findVotacaoById(votacaoId: number): Votacao | null {
+  for (const lista of Object.values(votacoesPorProposicao)) {
+    const found = lista.find((v) => v.id === votacaoId);
+    if (found) return found;
   }
   return null;
 }
@@ -528,29 +553,77 @@ function hoursAgo(hours: number): string {
   return d.toISOString();
 }
 
-export function getAllProposicoesMock(): Proposicao[] {
-  return [...proposicoes];
+export function listProposicoesMock(
+  params: ListProposicoesParams = {},
+): Paginated<Proposicao> {
+  let result = [...proposicoes];
+
+  if (params.tipo && params.tipo !== "TODOS") {
+    result = result.filter((p) => p.tipo === params.tipo);
+  }
+  if (params.ano) {
+    result = result.filter((p) => p.ano === params.ano);
+  }
+  if (params.dataInicio) {
+    const cutoff = new Date(params.dataInicio).getTime();
+    result = result.filter(
+      (p) =>
+        p.ultimaMovimentacaoAt !== null &&
+        new Date(p.ultimaMovimentacaoAt).getTime() >= cutoff,
+    );
+  }
+  if (params.dataFim) {
+    const cutoff = new Date(params.dataFim).getTime();
+    result = result.filter(
+      (p) =>
+        p.ultimaMovimentacaoAt !== null &&
+        new Date(p.ultimaMovimentacaoAt).getTime() <= cutoff,
+    );
+  }
+
+  result.sort((a, b) => {
+    const da = a.ultimaMovimentacaoAt
+      ? new Date(a.ultimaMovimentacaoAt).getTime()
+      : 0;
+    const db = b.ultimaMovimentacaoAt
+      ? new Date(b.ultimaMovimentacaoAt).getTime()
+      : 0;
+    return db - da;
+  });
+
+  const page = Math.max(1, params.page ?? 1);
+  const limit = Math.min(100, Math.max(1, params.limit ?? 20));
+  const total = result.length;
+  const start = (page - 1) * limit;
+  const data = result.slice(start, start + limit);
+
+  return { data, pagination: { page, limit, total } };
 }
 
 export function getProposicaoDetalheMock(
-  id: string,
+  id: number,
 ): ProposicaoDetalhe | null {
-  const base = proposicoes.find((p) => p.id === id);
-  if (!base) return null;
+  const proposicao = proposicoes.find((p) => p.id === id);
+  if (!proposicao) return null;
   return {
-    ...base,
+    proposicao,
     tramitacoes: [...(tramitacoesPorProposicao[id] ?? [])],
-    descricaoIA: descricoesIA[id] ?? null,
+    votacoes: [...(votacoesPorProposicao[id] ?? [])],
   };
 }
 
 export function getVotacaoDetalheMock(
-  votacaoId: string,
+  votacaoId: number,
+  params: ListVotosParams = {},
 ): VotacaoDetalhe | null {
   const votacao = findVotacaoById(votacaoId);
   if (!votacao) return null;
-  return {
-    ...votacao,
-    votos: [...(votosPorVotacao[votacaoId] ?? [])],
-  };
+
+  let votos = [...(votosPorVotacao[votacaoId] ?? [])];
+  const partido = params.partido?.trim().toUpperCase();
+  if (partido) {
+    votos = votos.filter((v) => v.deputado?.siglaPartido === partido);
+  }
+
+  return { votacao, votos };
 }

@@ -1,46 +1,63 @@
 import type { Metadata } from "next";
 import { listProposicoes } from "@/features/proposicoes/api";
+import { Paginator } from "@/features/proposicoes/components/Paginator";
 import { ProposicoesFilters } from "@/features/proposicoes/components/ProposicoesFilters";
 import { ProposicoesTable } from "@/features/proposicoes/components/ProposicoesTable";
-import type {
-  PeriodoFilter,
-  ProposicaoTipo,
-  ProposicaoTipoFilter,
-} from "@/features/proposicoes/types";
+import { isValidYearMonth, yearMonthToRange } from "@/features/proposicoes/periodo";
 
 export const metadata: Metadata = {
   title: "Proposições",
 };
 
-const TIPOS: ProposicaoTipo[] = ["PL", "PEC", "MPV", "PLP", "PDL"];
+const TIPOS_VALIDOS = new Set(["PL", "PEC", "MPV", "PLP", "PDL"]);
+const DEFAULT_LIMIT = 20;
 
 interface PageSearchParams {
-  q?: string;
   tipo?: string;
-  periodo?: string;
+  mes?: string;
+  page?: string;
+  q?: string;
 }
 
-function parseTipo(raw: string | undefined): ProposicaoTipoFilter {
+interface ParsedIdentifier {
+  tipo?: string;
+  numero?: number;
+  ano?: number;
+}
+
+function parseIdentifier(q: string): ParsedIdentifier {
+  const trimmed = q.trim();
+  // "PEC 389/2014", "pec389/2014", "PL 2630 2020"
+  const full = trimmed.match(/^([a-zA-Z]+)\s*(\d+)[\/\s](\d{4})$/i);
+  if (full) {
+    return {
+      tipo: full[1]!.toUpperCase(),
+      numero: Number(full[2]!),
+      ano: Number(full[3]!),
+    };
+  }
+  // "PEC 389" or "pec389" — tipo + número sem ano
+  const partial = trimmed.match(/^([a-zA-Z]+)\s*(\d+)$/i);
+  if (partial) {
+    return { tipo: partial[1]!.toUpperCase(), numero: Number(partial[2]!) };
+  }
+  return {};
+}
+
+function parseTipo(raw: string | undefined): string {
   if (!raw) return "TODOS";
   const upper = raw.toUpperCase();
-  return (TIPOS as string[]).includes(upper)
-    ? (upper as ProposicaoTipo)
-    : "TODOS";
+  return TIPOS_VALIDOS.has(upper) ? upper : "TODOS";
 }
 
-function parsePeriodo(
-  raw: string | undefined,
-): { filter: PeriodoFilter; initial: "30" | "90" | "365" | "TUDO" } {
-  switch (raw) {
-    case "30":
-      return { filter: 30, initial: "30" };
-    case "90":
-      return { filter: 90, initial: "90" };
-    case "365":
-      return { filter: 365, initial: "365" };
-    default:
-      return { filter: "TUDO", initial: "TUDO" };
-  }
+function parseMes(raw: string | undefined): string {
+  if (!raw) return "";
+  return isValidYearMonth(raw) ? raw : "";
+}
+
+function parsePage(raw: string | undefined): number {
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
 }
 
 export default async function ProposicoesPage({
@@ -50,17 +67,32 @@ export default async function ProposicoesPage({
   searchParams: Promise<PageSearchParams>;
 }) {
   const params = await searchParams;
-  const query = (params.q ?? "").trim();
   const tipo = parseTipo(params.tipo);
-  const { filter: periodoDias, initial: periodoInitial } = parsePeriodo(
-    params.periodo,
-  );
+  const mes = parseMes(params.mes);
+  const page = parsePage(params.page);
+  const q = params.q?.trim() ?? "";
 
-  const proposicoes = await listProposicoes({
-    query: query || undefined,
-    tipo,
-    periodoDias,
+  const identifier = q ? parseIdentifier(q) : {};
+  // Identifier tipo+ano override the chip/mes filters when q is set.
+  const effectiveTipo = identifier.tipo ?? (tipo === "TODOS" ? undefined : tipo);
+  const effectiveAno = identifier.ano;
+
+  const range = !effectiveAno && mes ? yearMonthToRange(mes) : null;
+
+  const { data: rawProposicoes, pagination } = await listProposicoes({
+    tipo: effectiveTipo,
+    ano: effectiveAno,
+    page,
+    limit: DEFAULT_LIMIT,
+    dataInicio: range?.dataInicio,
+    dataFim: range?.dataFim,
   });
+
+  // Numero filter is client-side only (backend doesn't support ?numero=).
+  const proposicoes =
+    identifier.numero !== undefined
+      ? rawProposicoes.filter((p) => p.numero === identifier.numero)
+      : rawProposicoes;
 
   return (
     <div className="flex flex-col gap-6">
@@ -69,19 +101,22 @@ export default async function ProposicoesPage({
           Proposições
         </h1>
         <p className="mt-1 text-sm text-slate-600">
-          {proposicoes.length === 1
+          {pagination.total === 1
             ? "1 proposição encontrada"
-            : `${proposicoes.length} proposições encontradas`}
+            : `${pagination.total} proposições encontradas`}
         </p>
       </div>
 
-      <ProposicoesFilters
-        initialQuery={query}
-        initialTipo={tipo}
-        initialPeriodo={periodoInitial}
-      />
+      <ProposicoesFilters initialTipo={tipo} initialMes={mes} initialQuery={q} />
 
       <ProposicoesTable proposicoes={proposicoes} />
+
+      <Paginator
+        page={pagination.page}
+        limit={pagination.limit}
+        total={pagination.total}
+        basePath="/proposicoes"
+      />
     </div>
   );
 }

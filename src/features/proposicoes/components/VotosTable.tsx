@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import type { VotoIndividual } from "../types";
+import type { VotoNominal } from "../types";
 import { VotoRow } from "./VotoRow";
 
 interface VotosTableProps {
-  votos: VotoIndividual[];
+  votos: VotoNominal[];
 }
 
 export function VotosTable({ votos }: VotosTableProps) {

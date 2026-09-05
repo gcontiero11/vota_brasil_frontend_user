@@ -1,48 +1,28 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { StatusBadge } from "../components/StatusBadge";
-import type { ProposicaoStatus } from "../types";
 
-const CASES: Array<{
-  status: ProposicaoStatus;
-  label: string;
-  variantClass: string;
-}> = [
-  {
-    status: "em_tramitacao",
-    label: "Em tramitação",
-    variantClass: "text-blue-700",
-  },
-  {
-    status: "pronta_para_pauta",
-    label: "Pronta para pauta",
-    variantClass: "text-amber-700",
-  },
-  {
-    status: "aprovada",
-    label: "Aprovada",
-    variantClass: "text-brand-700",
-  },
-  {
-    status: "arquivada",
-    label: "Arquivada",
-    variantClass: "text-slate-700",
-  },
-  {
-    status: "rejeitada",
-    label: "Rejeitada",
-    variantClass: "text-red-700",
-  },
+const CASES: Array<{ status: string; variantClass: string }> = [
+  { status: "Em tramitação", variantClass: "text-blue-700" },
+  { status: "Pronta para Pauta no Plenário", variantClass: "text-amber-700" },
+  { status: "Aprovada", variantClass: "text-brand-700" },
+  { status: "Transformada em Lei", variantClass: "text-brand-700" },
+  { status: "Arquivada", variantClass: "text-slate-700" },
+  { status: "Rejeitada", variantClass: "text-red-700" },
 ];
 
 describe("StatusBadge", () => {
   it.each(CASES)(
-    "mapeia o status $status para rótulo '$label' com a cor correta",
-    ({ status, label, variantClass }) => {
+    "mapeia o status livre '$status' para a cor correta",
+    ({ status, variantClass }) => {
       const { container } = render(<StatusBadge status={status} />);
-      const badge = screen.getByText(label);
-      expect(badge).toBeInTheDocument();
+      expect(screen.getByText(status)).toBeInTheDocument();
       expect(container.firstChild).toHaveClass(variantClass);
     },
   );
+
+  it("mostra rótulo neutro para status null", () => {
+    render(<StatusBadge status={null} />);
+    expect(screen.getByText("Sem status")).toBeInTheDocument();
+  });
 });

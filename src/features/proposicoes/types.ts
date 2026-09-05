@@ -1,106 +1,111 @@
-export type ProposicaoTipo = "PL" | "PEC" | "MPV" | "PLP" | "PDL";
+/**
+ * Tipos do domínio de proposições.
+ *
+ * Os nomes seguem camelCase no frontend; a tradução do snake_case do backend
+ * é feita na borda em `api.ts`. Strings livres do backend (status, resultado,
+ * descricao_situacao, despacho) são preservadas — qualquer mapeamento para
+ * cores/categorias é heurístico e local ao componente.
+ */
 
-export type ProposicaoStatus =
-  | "em_tramitacao"
-  | "pronta_para_pauta"
-  | "aprovada"
-  | "arquivada"
-  | "rejeitada";
-
-export interface Autoria {
-  nome: string;
-  partido?: string;
-  uf?: string;
-}
+/** Tipos da Câmara são abertos (PL, PEC, MPV, REQ, DOC, …) — string livre. */
+export type ProposicaoTipoFilter = string | "TODOS";
 
 export interface Proposicao {
-  id: string;
-  tipo: ProposicaoTipo;
+  id: number;
+  externalId: number;
+  tipo: string;
   numero: number;
   ano: number;
-  ementa: string;
-  autoria: Autoria;
-  status: ProposicaoStatus;
-  /** Data da última movimentação (ISO-8601). */
-  ultimaMovimentacaoAt: string;
+  ementa: string | null;
+  status: string | null;
+  /** Data da última tramitação relevante (ISO-8601). Pode estar ausente. */
+  ultimaMovimentacaoAt: string | null;
 }
-
-export type TramitacaoTipo =
-  | "DISTRIBUICAO"
-  | "RELATOR"
-  | "PARECER"
-  | "VOTACAO"
-  | "ENCAMINHAMENTO"
-  | "FINALIZACAO"
-  | "REATIVACAO";
 
 export interface Tramitacao {
-  id: string;
-  proposicaoId: string;
-  tipo: TramitacaoTipo;
-  descricao: string;
-  orgao: string;
-  /** Data em que a tramitação ocorreu (ISO-8601). */
-  ocorridaEm: string;
-  /** Presente quando `tipo === "VOTACAO"`: detalhes da votação realizada. */
-  votacao?: Votacao;
-}
-
-export type VotacaoResultado = "aprovada" | "rejeitada" | "pendente";
-
-export interface VotacaoPlacar {
-  sim?: number;
-  nao?: number;
-  abstencao?: number;
-  ausente?: number;
+  id: number;
+  proposicaoId: number;
+  externalId: number | null;
+  sequencia: number;
+  /** ISO-8601. */
+  dataHora: string;
+  siglaOrgao: string | null;
+  descricaoSituacao: string | null;
+  despacho: string | null;
+  regime: string | null;
 }
 
 export interface Votacao {
-  id: string;
-  proposicaoId: string;
-  titulo: string;
-  /** Data da votação (ISO-8601). */
-  ocorridaEm: string;
-  resultado: VotacaoResultado;
-  placar?: VotacaoPlacar;
-  /** Texto curto explicando do que se trata a votação. */
-  resumo?: string;
+  id: number;
+  externalId: string;
+  proposicaoPrincipalId: number | null;
+  /** ISO-8601. */
+  dataHora: string;
+  descricao: string | null;
+  /** Texto bruto do backend ("aprovado", "rejeitado", …). Sem enum. */
+  resultado: string | null;
+  tipoRaw: string | null;
 }
 
-export interface ProposicaoDetalhe extends Proposicao {
+export interface DeputadoResumo {
+  id: number;
+  nome: string;
+  siglaPartido: string | null;
+  siglaUf: string | null;
+}
+
+export interface VotoNominal {
+  id: number;
+  votacaoId: number;
+  deputadoId: number;
+  /** Texto bruto da Câmara ("Sim", "Não", "Abstenção", "Obstrução", …). */
+  votoRaw: string;
+  /** Hidratado pelo backend via JOIN. */
+  deputado: DeputadoResumo | null;
+}
+
+export interface ProposicaoDetalhe {
+  proposicao: Proposicao;
   tramitacoes: Tramitacao[];
-  /** Resumo gerado por IA. `null` indica que ainda não há resumo disponível. */
-  descricaoIA: string | null;
+  votacoes: Votacao[];
 }
 
-export type VotoResultado =
-  | "sim"
-  | "nao"
-  | "abstencao"
-  | "ausente"
-  | "obstrucao";
-
-export interface VotoIndividual {
-  id: string;
-  deputado: string;
-  partido: string;
-  uf: string;
-  resultado: VotoResultado;
+export interface VotacaoDetalhe {
+  votacao: Votacao;
+  votos: VotoNominal[];
 }
 
-export interface VotacaoDetalhe extends Votacao {
-  votos: VotoIndividual[];
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+}
+
+export interface Paginated<T> {
+  data: T[];
+  pagination: Pagination;
+}
+
+export interface ListProposicoesParams {
+  page?: number;
+  limit?: number;
+  tipo?: ProposicaoTipoFilter;
+  ano?: number;
+  status?: string;
+  /** RFC3339 — filtra `last_relevant_change_at >=`. */
+  dataInicio?: string;
+  /** RFC3339 — filtra `last_relevant_change_at <=`. */
+  dataFim?: string;
+}
+
+export interface ListVotacoesPorProposicaoParams {
+  page?: number;
+  limit?: number;
 }
 
 export interface ListVotosParams {
+  page?: number;
+  limit?: number;
+  /** Filtro client-side por sigla de partido — não suportado pelo backend. */
   partido?: string;
-}
-
-export type ProposicaoTipoFilter = ProposicaoTipo | "TODOS";
-export type PeriodoFilter = 30 | 90 | 365 | "TUDO";
-
-export interface ListProposicoesParams {
-  query?: string;
-  tipo?: ProposicaoTipoFilter;
-  periodoDias?: PeriodoFilter;
 }

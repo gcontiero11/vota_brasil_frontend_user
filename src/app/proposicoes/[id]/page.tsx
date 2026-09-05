@@ -3,10 +3,14 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProposicaoById } from "@/features/proposicoes/api";
-import { DescricaoIA } from "@/features/proposicoes/components/DescricaoIA";
 import { ProposicaoHeader } from "@/features/proposicoes/components/ProposicaoHeader";
 import { TramitacoesList } from "@/features/proposicoes/components/TramitacoesList";
 import { formatProposicaoIdentifier } from "@/lib/format";
+
+function parseId(raw: string): number | null {
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
+}
 
 export async function generateMetadata({
   params,
@@ -14,9 +18,12 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const proposicao = await getProposicaoById(id);
-  if (!proposicao) return { title: "Proposição não encontrada" };
-  return { title: formatProposicaoIdentifier(proposicao) };
+  const numericId = parseId(id);
+  if (numericId === null) return { title: "Proposição não encontrada" };
+
+  const detalhe = await getProposicaoById(numericId);
+  if (!detalhe) return { title: "Proposição não encontrada" };
+  return { title: formatProposicaoIdentifier(detalhe.proposicao) };
 }
 
 export default async function ProposicaoDetalhePage({
@@ -25,8 +32,11 @@ export default async function ProposicaoDetalhePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const proposicao = await getProposicaoById(id);
-  if (!proposicao) notFound();
+  const numericId = parseId(id);
+  if (numericId === null) notFound();
+
+  const detalhe = await getProposicaoById(numericId);
+  if (!detalhe) notFound();
 
   return (
     <div className="flex flex-col gap-6">
@@ -39,20 +49,17 @@ export default async function ProposicaoDetalhePage({
         </Link>
       </nav>
 
-      <ProposicaoHeader proposicao={proposicao} />
-
-      <Section
-        title="Descrição (IA)"
-        description="Resumo explicativo gerado por IA a partir do conteúdo oficial."
-      >
-        <DescricaoIA texto={proposicao.descricaoIA} />
-      </Section>
+      <ProposicaoHeader proposicao={detalhe.proposicao} />
 
       <Section
         title="Linha do tempo"
-        description="Movimentações da proposição em ordem cronológica decrescente, incluindo votações."
+        description="Tramitações e votações da proposição em ordem cronológica decrescente."
       >
-        <TramitacoesList tramitacoes={proposicao.tramitacoes} />
+        <TramitacoesList
+          proposicaoId={detalhe.proposicao.id}
+          tramitacoes={detalhe.tramitacoes}
+          votacoes={detalhe.votacoes}
+        />
       </Section>
     </div>
   );

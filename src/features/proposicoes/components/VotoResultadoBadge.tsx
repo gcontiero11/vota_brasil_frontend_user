@@ -1,33 +1,10 @@
 import { Badge } from "@/components/ui/Badge";
-import type { BadgeVariant } from "@/components/ui/Badge";
-import type { VotoResultado } from "../types";
-
-const RESULTADO_LABEL: Record<VotoResultado, string> = {
-  sim: "Sim",
-  nao: "Não",
-  abstencao: "Abstenção",
-  ausente: "Ausente",
-  obstrucao: "Obstrução",
-};
-
-const RESULTADO_VARIANT: Record<VotoResultado, BadgeVariant> = {
-  sim: "success",
-  nao: "danger",
-  abstencao: "warning",
-  ausente: "neutral",
-  obstrucao: "info",
-};
+import { votoVariant } from "../normalize";
 
 interface VotoResultadoBadgeProps {
-  resultado: VotoResultado;
+  votoRaw: string;
 }
 
-export function VotoResultadoBadge({ resultado }: VotoResultadoBadgeProps) {
-  return (
-    <Badge variant={RESULTADO_VARIANT[resultado]}>
-      {RESULTADO_LABEL[resultado]}
-    </Badge>
-  );
+export function VotoResultadoBadge({ votoRaw }: VotoResultadoBadgeProps) {
+  return <Badge variant={votoVariant(votoRaw)}>{votoRaw}</Badge>;
 }
-
-export const __private = { RESULTADO_LABEL, RESULTADO_VARIANT };

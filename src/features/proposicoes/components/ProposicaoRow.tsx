@@ -12,7 +12,6 @@ interface ProposicaoRowProps {
 
 export function ProposicaoRow({ proposicao }: ProposicaoRowProps) {
   const identifier = formatProposicaoIdentifier(proposicao);
-  const autoriaText = formatAutoria(proposicao);
 
   return (
     <tr className="border-b border-slate-200 last:border-b-0 hover:bg-slate-50">
@@ -20,14 +19,15 @@ export function ProposicaoRow({ proposicao }: ProposicaoRowProps) {
         {identifier}
       </td>
       <td className="px-4 py-3 text-sm text-slate-700">
-        <p className="line-clamp-2">{proposicao.ementa}</p>
+        <p className="line-clamp-2">{proposicao.ementa ?? "—"}</p>
       </td>
-      <td className="px-4 py-3 text-sm text-slate-700">{autoriaText}</td>
       <td className="px-4 py-3 text-sm">
         <StatusBadge status={proposicao.status} />
       </td>
       <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600">
-        {formatRelativeDate(proposicao.ultimaMovimentacaoAt)}
+        {proposicao.ultimaMovimentacaoAt
+          ? formatRelativeDate(proposicao.ultimaMovimentacaoAt)
+          : "—"}
       </td>
       <td className="whitespace-nowrap px-4 py-3 text-sm">
         <Link
@@ -40,15 +40,4 @@ export function ProposicaoRow({ proposicao }: ProposicaoRowProps) {
       </td>
     </tr>
   );
-}
-
-function formatAutoria(p: Proposicao): string {
-  const parts = [p.autoria.nome];
-  if (p.autoria.partido || p.autoria.uf) {
-    const suffix = [p.autoria.partido, p.autoria.uf]
-      .filter(Boolean)
-      .join("/");
-    parts.push(`(${suffix})`);
-  }
-  return parts.join(" ");
 }

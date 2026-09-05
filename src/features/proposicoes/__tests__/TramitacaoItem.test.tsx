@@ -1,78 +1,66 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { TramitacaoItem } from "../components/TramitacaoItem";
-import type { Tramitacao } from "../types";
+import { VotacaoCard } from "../components/VotacaoCard";
+import type { Tramitacao, Votacao } from "../types";
 
 const tramitacao: Tramitacao = {
-  id: "t-1",
-  proposicaoId: "p-1",
-  tipo: "RELATOR",
-  descricao: "Designação de relator na Comissão de Educação.",
-  orgao: "CEDUC",
-  ocorridaEm: "2025-01-10T15:00:00.000Z",
+  id: 1,
+  proposicaoId: 10,
+  externalId: null,
+  sequencia: 3,
+  dataHora: "2025-01-10T15:00:00.000Z",
+  siglaOrgao: "CEDUC",
+  descricaoSituacao: "Designação de Relator",
+  despacho: "Designação do relator na Comissão de Educação.",
+  regime: "Ordinário",
 };
 
-const tramitacaoVotacao: Tramitacao = {
-  id: "t-2",
-  proposicaoId: "p-1",
-  tipo: "VOTACAO",
-  descricao: "Aprovação do parecer do relator.",
-  orgao: "CEDUC",
-  ocorridaEm: "2025-02-01T17:30:00.000Z",
-  votacao: {
-    id: "v-1",
-    proposicaoId: "p-1",
-    titulo: "Aprovação do parecer do relator",
-    ocorridaEm: "2025-02-01T17:30:00.000Z",
-    resultado: "aprovada",
-    placar: { sim: 30, nao: 12, abstencao: 6, ausente: 2 },
-    resumo:
-      "Comissão decide sobre o parecer favorável apresentado pelo relator.",
-  },
+const votacao: Votacao = {
+  id: 99,
+  externalId: "10-1",
+  proposicaoPrincipalId: 10,
+  dataHora: "2025-02-01T17:30:00.000Z",
+  descricao: "Aprovação do parecer do relator",
+  resultado: "aprovado",
+  tipoRaw: "Nominal",
 };
 
 describe("TramitacaoItem", () => {
-  it("renderiza tipo, descrição e órgão sem botão de expandir para tipos não-VOTACAO", () => {
+  it("renderiza descrição_situacao, despacho e meta (órgão · regime · data)", () => {
     render(<TramitacaoItem tramitacao={tramitacao} />);
 
-    expect(screen.getByText("Relator")).toBeInTheDocument();
-    expect(screen.getByText(tramitacao.descricao)).toBeInTheDocument();
-    expect(screen.getByText(/CEDUC/)).toBeInTheDocument();
+    expect(screen.getByText("Designação de Relator")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /Detalhes da tramitação/ }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("começa colapsado e mostra apenas o cabeçalho quando tipo é VOTACAO", () => {
-    render(<TramitacaoItem tramitacao={tramitacaoVotacao} />);
-
-    const toggle = screen.getByRole("button", {
-      name: /Detalhes da tramitação/,
-    });
-    expect(toggle).toHaveAttribute("aria-expanded", "false");
-    expect(
-      screen.queryByText(tramitacaoVotacao.votacao!.resumo as string),
-    ).not.toBeInTheDocument();
-  });
-
-  it("renderiza placar, resumo e link para votos quando tipo é VOTACAO", async () => {
-    render(<TramitacaoItem tramitacao={tramitacaoVotacao} />);
-
-    expect(screen.getByText("Votação")).toBeInTheDocument();
-    expect(screen.getByText("Aprovada")).toBeInTheDocument();
-
-    await userEvent.click(
-      screen.getByRole("button", { name: /Detalhes da tramitação/ }),
-    );
-
-    expect(
-      screen.getByText(tramitacaoVotacao.votacao!.resumo as string),
+      screen.getByText("Designação do relator na Comissão de Educação."),
     ).toBeInTheDocument();
-    expect(screen.getByText("Sim")).toBeInTheDocument();
-    expect(screen.getByText("30")).toBeInTheDocument();
+    expect(screen.getByText(/CEDUC/)).toBeInTheDocument();
+    expect(screen.getByText(/Ordinário/)).toBeInTheDocument();
+  });
+});
+
+describe("VotacaoCard", () => {
+  it("mostra a descrição, o resultado bruto e o link para os votos", () => {
+    render(<VotacaoCard votacao={votacao} proposicaoId={10} />);
+
+    expect(
+      screen.getByText("Aprovação do parecer do relator"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("aprovado")).toBeInTheDocument();
 
     const link = screen.getByRole("link", { name: /Ver votos da votação/ });
-    expect(link).toHaveAttribute("href", "/proposicoes/p-1/votacoes/v-1");
+    expect(link).toHaveAttribute("href", "/proposicoes/10/votacoes/99");
+  });
+
+  it("usa fallback de descrição quando ausente e marca como pendente", () => {
+    render(
+      <VotacaoCard
+        votacao={{ ...votacao, descricao: null, resultado: null }}
+        proposicaoId={10}
+      />,
+    );
+
+    expect(screen.getByText("Votação sem descrição")).toBeInTheDocument();
+    expect(screen.getByText("Pendente")).toBeInTheDocument();
   });
 });

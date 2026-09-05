@@ -6,15 +6,23 @@ import { VotacaoDetalheHeader } from "@/features/proposicoes/components/VotacaoD
 import { VotosFilters } from "@/features/proposicoes/components/VotosFilters";
 import { VotosTable } from "@/features/proposicoes/components/VotosTable";
 
+function parseId(raw: string): number | null {
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
+}
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ id: string; votacaoId: string }>;
 }): Promise<Metadata> {
   const { votacaoId } = await params;
-  const votacao = await getVotacaoById(votacaoId);
-  if (!votacao) return { title: "Votação não encontrada" };
-  return { title: votacao.titulo };
+  const numericId = parseId(votacaoId);
+  if (numericId === null) return { title: "Votação não encontrada" };
+
+  const detalhe = await getVotacaoById(numericId);
+  if (!detalhe) return { title: "Votação não encontrada" };
+  return { title: detalhe.votacao.descricao ?? "Votação" };
 }
 
 export default async function VotacaoDetalhePage({
@@ -27,11 +35,18 @@ export default async function VotacaoDetalhePage({
   const { id: proposicaoId, votacaoId } = await params;
   const { partido: partidoRaw } = await searchParams;
 
-  const votacao = await getVotacaoById(votacaoId);
-  if (!votacao) notFound();
+  const numericId = parseId(votacaoId);
+  if (numericId === null) notFound();
+
+  const detalhe = await getVotacaoById(numericId);
+  if (!detalhe) notFound();
 
   const partidosDisponiveis = Array.from(
-    new Set(votacao.votos.map((v) => v.partido)),
+    new Set(
+      detalhe.votos
+        .map((v) => v.deputado?.siglaPartido)
+        .filter((p): p is string => Boolean(p)),
+    ),
   ).sort();
 
   const partidoSelecionado =
@@ -40,8 +55,10 @@ export default async function VotacaoDetalhePage({
       : null;
 
   const votosExibidos = partidoSelecionado
-    ? votacao.votos.filter((v) => v.partido === partidoSelecionado)
-    : votacao.votos;
+    ? detalhe.votos.filter(
+        (v) => v.deputado?.siglaPartido === partidoSelecionado,
+      )
+    : detalhe.votos;
 
   return (
     <div className="flex flex-col gap-6">
@@ -54,7 +71,7 @@ export default async function VotacaoDetalhePage({
         </Link>
       </nav>
 
-      <VotacaoDetalheHeader votacao={votacao} />
+      <VotacaoDetalheHeader votacao={detalhe.votacao} />
 
       <section className="flex flex-col gap-3">
         <div>

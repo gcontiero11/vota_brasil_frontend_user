@@ -1,9 +1,8 @@
 /**
- * Cliente HTTP centralizado.
+ * Cliente HTTP centralizado para a API REST do Vota Brasil.
  *
- * Enquanto o backend não está disponível, este módulo não é exercitado pelas
- * features — elas consomem `mocks.ts` via `api.ts`. A infraestrutura fica
- * pronta para ser plugada quando houver endpoints reais.
+ * Base URL vem de `NEXT_PUBLIC_API_BASE_URL` (default `http://localhost:8080`).
+ * O backend já habilita CORS para `http://localhost:3000` por default em dev.
  */
 
 export class HttpError extends Error {
@@ -23,11 +22,7 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 function resolveBaseUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
   if (explicit) return explicit.replace(/\/+$/, "");
-
-  const port = process.env.NEXT_PUBLIC_API_PORT?.trim();
-  if (port) return `http://localhost:${port}`;
-
-  return "";
+  return "http://localhost:8080";
 }
 
 const BASE_URL = resolveBaseUrl();

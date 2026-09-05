@@ -1,10 +1,8 @@
-import type { ProposicaoTipo } from "@/features/proposicoes/types";
-
 /**
  * Formata o identificador canônico de uma proposição: "PL 2345/2024".
  */
 export function formatProposicaoIdentifier(input: {
-  tipo: ProposicaoTipo;
+  tipo: string;
   numero: number;
   ano: number;
 }): string {
@@ -14,7 +12,8 @@ export function formatProposicaoIdentifier(input: {
 /**
  * Formata uma data ISO para o padrão dd/mm/aaaa em pt-BR.
  */
-export function formatDate(iso: string): string {
+export function formatDate(iso: string | null | undefined): string {
+  if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
   return d.toLocaleDateString("pt-BR", {
@@ -27,7 +26,8 @@ export function formatDate(iso: string): string {
 /**
  * Formata data + hora ISO → "dd/mm/aaaa HH:mm".
  */
-export function formatDateTime(iso: string): string {
+export function formatDateTime(iso: string | null | undefined): string {
+  if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
   return d.toLocaleString("pt-BR", {
@@ -45,7 +45,11 @@ export function formatDateTime(iso: string): string {
  *
  * O parâmetro `now` existe para permitir testes determinísticos.
  */
-export function formatRelativeDate(iso: string, now: Date = new Date()): string {
+export function formatRelativeDate(
+  iso: string | null | undefined,
+  now: Date = new Date(),
+): string {
+  if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
 
@@ -72,15 +76,18 @@ export function formatRelativeDate(iso: string, now: Date = new Date()): string 
 }
 
 /**
- * Rótulo humano para o tipo de proposição.
+ * Rótulo humano para os tipos de proposição mais comuns. Tipos não mapeados
+ * caem no próprio código (ex.: "REQ" → "REQ").
  */
-export function formatTipoLabel(tipo: ProposicaoTipo): string {
-  const labels: Record<ProposicaoTipo, string> = {
+export function formatTipoLabel(tipo: string): string {
+  const labels: Record<string, string> = {
     PL: "Projeto de Lei",
     PEC: "Proposta de Emenda à Constituição",
     MPV: "Medida Provisória",
     PLP: "Projeto de Lei Complementar",
     PDL: "Projeto de Decreto Legislativo",
+    PRC: "Projeto de Resolução",
+    REQ: "Requerimento",
   };
-  return labels[tipo];
+  return labels[tipo] ?? tipo;
 }
